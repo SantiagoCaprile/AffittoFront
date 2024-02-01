@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 
 async function listarPropiedades() {
 	const listaPropiedades = await fetch("http://localhost:3000/propiedades")
@@ -27,14 +28,40 @@ async function listarPropiedades() {
 //tipo, dimension, domicilio.calle+ domicilio.altura, domicilio.localidad, precio + moneda, ver mas
 export default function PropiedadesPage() {
 	const [props, setProps] = useState([]);
+	const [filtradas, setFiltradas] = useState([]);
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm();
 
 	useEffect(() => {
 		async function fetchData() {
 			const propiedades = await listarPropiedades();
 			setProps(propiedades);
+			setFiltradas(propiedades);
 		}
 		fetchData();
 	}, []);
+
+	const filtrarPropiedades = async (data) => {
+		const listaFiltrada = props.filter((prop) => {
+			if (data.tipo !== "" && data.tipo !== prop.tipo) return false;
+			if (data.moneda !== "" && data.moneda !== prop.moneda) return false;
+			if (data.min && data.min > prop.precio) return false;
+			if (data.max && data.max < prop.precio) return false;
+			return true;
+		});
+		setFiltradas(listaFiltrada);
+	};
+
+	const limpiarFiltros = () => {
+		setFiltradas(props);
+		document.getElementsByName("tipo")[0].value = "";
+		document.getElementsByName("moneda")[0].value = "";
+		document.getElementsByName("min")[0].value = "";
+		document.getElementsByName("max")[0].value = "";
+	};
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF]">
@@ -68,41 +95,53 @@ export default function PropiedadesPage() {
 							className="border-x-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
 							name="tipo"
 							id="tipo"
+							{...register("tipo")}
 						>
-							<option value="casa">Casa</option>
-							<option value="departamento">Departamento</option>
-							<option value="galpon">Galpón</option>
-							<option value="oficina">Oficina</option>
-							<option value="terreno">Terreno</option>
-							<option value="local">Local</option>
-							<option value="otros">Otro</option>
+							<option value="" defaultValue>
+								Tipo
+							</option>
+							<option value="Casa">Casa</option>
+							<option value="Departamento">Departamento</option>
+							<option value="Galpon">Galpón</option>
+							<option value="Oficina">Oficina</option>
+							<option value="Terreno">Terreno</option>
+							<option value="Local">Local</option>
+							<option value="Otros">Otro</option>
 						</select>
 						<select
 							className="border-x-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
-							name="moneda"
-							id="moneda"
+							{...register("moneda")}
 						>
-							<option value="pesos">Pesos</option>
-							<option value="dolares">Dólares</option>
+							<option value="" defaultValue>
+								Moneda
+							</option>
+							<option value="ARS">Pesos</option>
+							<option value="USD">Dólares</option>
 						</select>
 						<input
 							className="border-b-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
 							type="number"
-							name="min"
-							id="min"
+							min={0}
 							placeholder="Monto Min"
+							{...register("min")}
 						/>
 						<input
 							className="border-b-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
 							type="number"
-							name="max"
-							id="max"
+							min={0}
 							placeholder="Monto Max"
+							{...register("max")}
 						/>
-						<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+						<button
+							onClick={handleSubmit(filtrarPropiedades)}
+							className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+						>
 							<Search />
 						</button>
-						<button className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 rounded">
+						<button
+							onClick={limpiarFiltros}
+							className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 rounded"
+						>
 							Limpiar
 						</button>
 					</div>
@@ -119,14 +158,14 @@ export default function PropiedadesPage() {
 						</tr>
 					</thead>
 					<tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-						{props.length === 0 ? (
+						{filtradas.length === 0 ? (
 							<tr>
 								<td colSpan="6" className="text-center text-red-500">
 									No hay resultados
 								</td>
 							</tr>
 						) : (
-							props.map((prop, index) => (
+							filtradas.map((prop, index) => (
 								<tr key={index} className={styles.tr}>
 									<td className={styles.td}>{prop.tipo}</td>
 									<td className={styles.td}>
@@ -137,7 +176,7 @@ export default function PropiedadesPage() {
 									</td>
 									<td className={styles.td}>{prop.domicilio.localidad}</td>
 									<td className={styles.td}>
-										{prop.precio} {prop.moneda}
+										{mostrarMontoSeparado(prop.precio)} {prop.moneda}
 									</td>
 									<td className={styles.td}>
 										<Link
@@ -164,4 +203,13 @@ const styles = {
 	button: "flex justify-center w-1/2 bg-blue-500 rounded-xl",
 	input:
 		"w-2/5 border-black border-b-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
+};
+
+const mostrarMontoSeparado = (monto) => {
+	const montoString = monto.toString();
+	const largo = montoString.length;
+	if (largo <= 3) return montoString;
+	const resto = montoString.slice(largo - 3, largo);
+	const parteEntera = montoString.slice(0, largo - 3);
+	return `${mostrarMontoSeparado(parteEntera)}.${resto}`;
 };
