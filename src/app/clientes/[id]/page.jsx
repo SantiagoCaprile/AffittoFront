@@ -1,9 +1,29 @@
+"use client";
 import React from "react";
 import NextImage from "next/image";
 import { Pencil, ChevronLeft } from "lucide-react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
+const buscarCliente = async (cuit) => {
+	const response = await fetch(`http://localhost:3000/api/v1/clientes/${cuit}`)
+		.then((response) => response.json())
+		.then((data) => data.data);
+	return response;
+};
+
 const InfoClientePage = () => {
+	const [cliente, setCliente] = useState({});
+
+	useEffect(() => {
+		const cuit = document.location.pathname.split("/")[2];
+		async function fetchData() {
+			const cliente = await buscarCliente(cuit);
+			setCliente(cliente);
+		}
+		fetchData();
+	}, []);
+
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF] p-4">
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-[800px] w-2/3">
@@ -31,43 +51,51 @@ const InfoClientePage = () => {
 						style={{ objectFit: "cover" }}
 					/>
 					<div className="flex flex-wrap">
+						<label className="block font-bold">Nombre:</label>
 						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Nombre:</label>
-							<span>John Doe</span>
+							<span>{cliente.nombre_razon_social}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">CUIT/CUIL:</label>
-							<span>20-12345678-9</span>
+							<span>{cliente.cuit}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Domicilio:</label>
-							<span>Calle Falsa 123</span>
+							<span>
+								{cliente.domicilio?.calle +
+									" " +
+									cliente.domicilio?.altura +
+									" " +
+									cliente.domicilio?.piso +
+									" " +
+									cliente.domicilio?.dpto}
+							</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Localidad:</label>
-							<span>Springfield</span>
+							<span>{cliente.domicilio?.localidad}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Email:</label>
 							<span>
 								<a href="mailto:john@affitto.com" className="text-blue-500">
-									john@affitto.com
+									{cliente.email}
 								</a>
 							</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Celular:</label>
-							<span>123-456-7890</span>
+							<span>{cliente.celular}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Telefono:</label>
-							<span>123-456-7890</span>
+							<span>{cliente.telefono}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">
 								Condición frente al IVA:
 							</label>
-							<span>Responsable Inscripto</span>
+							<span>{cliente.condicion_iva}</span>
 						</div>
 					</div>
 				</div>
