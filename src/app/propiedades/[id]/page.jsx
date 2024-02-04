@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import NextImage from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pencil, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -11,6 +11,12 @@ const images = [
 	"/images/house3.webp",
 ];
 
+const buscarPropiedad = async (_id) => {
+	const response = await fetch("http://localhost:3000" + "/propiedades/" + _id)
+		.then((response) => response.json())
+		.then((data) => data.data);
+	return response;
+};
 //datos que debe tener
 //domicilio, localidad, tipo de propiedad, superficie, descripcion
 //precio, estado actual
@@ -18,6 +24,17 @@ const images = [
 
 const InfoPropiedadPage = () => {
 	const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
+	const [propiedad, setPropiedad] = useState({});
+
+	useEffect(() => {
+		const _id = document.location.pathname.split("/")[2];
+		async function fetchData() {
+			const propiedad = await buscarPropiedad(_id);
+			setPropiedad(propiedad);
+			console.log(propiedad);
+		}
+		fetchData();
+	}, []);
 
 	const handleImageClick = (index) => {
 		setImagenSeleccionada(index);
@@ -83,40 +100,59 @@ const InfoPropiedadPage = () => {
 					<div className="flex flex-wrap justify-center items-end">
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Domicilio:</label>
-							<span>Calle Falsa 123</span>
+							<span>
+								{propiedad.domicilio?.calle ? propiedad.domicilio?.calle : ""}{" "}
+								{propiedad.domicilio?.altura ? propiedad.domicilio?.altura : ""}{" "}
+								{propiedad.domicilio?.piso ? propiedad.domicilio?.piso : ""}{" "}
+								{propiedad.domicilio?.dpto ? propiedad.domicilio?.dpto : ""}
+							</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Localidad:</label>
-							<span>Springfield</span>
+							<span>{propiedad.domicilio?.localidad}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Tipo de Propiedad:</label>
-							<span>Casa</span>
+							<span>{propiedad.tipo}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Superficie:</label>
-							<span>200 m2</span>
+							<span>{propiedad.dimension} m2</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Precio:</label>
-							<span>$ 200.000</span>
+							<span>
+								{propiedad.moneda === "USD" ? "U$S" : "$"} {propiedad.precio}
+							</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Estado:</label>
-							<span>Disponible</span>
+							<span>{propiedad.estado}</span>
 						</div>
 						<div className="mb-2 w-full">
 							<label className="block font-bold">Descripción:</label>
-							<span>Esta es una casa muy linda</span>
+							<span>{propiedad.descripcion}</span>
 						</div>
 						<div className="flex gap-4 items-center pb-4">
-							<button className="bg-green-500 hover:bg-green-600 transition-all text-white px-4 py-2 rounded-md">
+							<button
+								{...(propiedad.estado === "Disponible" ? "" : "disabled")}
+								className={
+									(propiedad.estado !== "Disponible" ? styles.disabled : "") +
+									" bg-green-500 hover:bg-green-600 transition-all text-white px-4 py-2 rounded-md "
+								}
+							>
 								Alquilar
 							</button>
 							<button className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md">
 								Vender
 							</button>
-							<button className="bg-yellow-500 hover:bg-yellow-600 transition-all text-white px-4 py-2 rounded-md">
+							<button
+								{...(propiedad.estado === "Disponible" ? "" : "disabled")}
+								className={
+									(propiedad.estado !== "Disponible" ? styles.disabled : "") +
+									" bg-yellow-500 hover:bg-yellow-600 transition-all text-white px-4 py-2 rounded-md"
+								}
+							>
 								Señar
 							</button>
 						</div>
@@ -125,6 +161,10 @@ const InfoPropiedadPage = () => {
 			</div>
 		</div>
 	);
+};
+
+const styles = {
+	disabled: "bg-gray-500 cursor-not-allowed",
 };
 
 export default InfoPropiedadPage;
