@@ -2,13 +2,52 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 
+const GuardarCliente = async (data) => {
+	const cliente = {
+		nombre_razon_social: data.nombre,
+		cuit: data.cuit,
+		condicion_iva: data.iva,
+		email: data.mail,
+		celular: data.celular,
+		telefono: data.telefono,
+		domicilio: {
+			localidad: data.localidad,
+			calle: data.calle,
+			altura: data.altura,
+			piso: data.piso,
+			dpto: data.dpto,
+		},
+	};
+	//fetch a la api para guardar el cliente
+	fetch("http://localhost:3000/api/v1/clientes", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(cliente),
+	})
+		.then((response) => response.json())
+		.then((data) => console.log(data))
+		.catch((error) => console.error("Error:", error));
+};
+
 export default function CrearClientePage() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm();
-	const onSubmit = (register) => console.log(register);
+
+	const onSubmit = (data) => {
+		console.log(data);
+		GuardarCliente(data)
+			.then((response) => response.json())
+			.then((data) => console.log(data))
+			.catch((error) => console.error("Error:", error))
+			.finally(() => {
+				window.location.href = "/clientes";
+			});
+	};
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF] p-4">
@@ -213,7 +252,7 @@ export default function CrearClientePage() {
 							</fieldset>
 						</div>
 					</div>
-					<button type="submit" className={styles.button}>
+					<button id="boton-enviar" type="submit" className={styles.button}>
 						Crear nuevo cliente
 					</button>
 				</form>
