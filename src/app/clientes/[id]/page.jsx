@@ -62,13 +62,13 @@ const InfoClientePage = () => {
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Domicilio:</label>
 							<span>
-								{cliente.domicilio?.calle +
+								{(cliente.domicilio?.calle ?? "") +
 									" " +
-									cliente.domicilio?.altura +
+									(cliente.domicilio?.numero ?? "") +
 									" " +
-									cliente.domicilio?.piso +
+									(cliente.domicilio?.piso ?? "") +
 									" " +
-									cliente.domicilio?.dpto}
+									(cliente.domicilio?.dpto ?? "")}
 							</span>
 						</div>
 						<div className="mb-2 w-1/2">
