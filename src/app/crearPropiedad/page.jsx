@@ -3,6 +3,37 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import SelectorClientes from "@/components/SelectorClientes/page";
 
+const CrearPropiedad = async (data) => {
+	const propiedad = {
+		tipo: data.tipo,
+		dimension: data.m2,
+		estado: data.estado,
+		precio: data.precio,
+		moneda: data.moneda,
+		descripcion: data.descripcion,
+		domicilio: {
+			localidad: data.localidad,
+			calle: data.calle,
+			altura: data.altura,
+			piso: data.piso,
+			dpto: data.dpto,
+		},
+		propietario: data.clientes[0],
+	};
+
+	//fetch a la api para guardar la propiedad
+	fetch("http://localhost:3000/propiedades", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(propiedad),
+	})
+		.then((response) => response.json())
+		.then((data) => console.log(data))
+		.catch((error) => console.error("Error:", error));
+};
+
 export default function CrearPropiedadPage() {
 	const {
 		register,
@@ -14,8 +45,14 @@ export default function CrearPropiedadPage() {
 	const onSubmit = (data) => {
 		data = {
 			...data,
-			clientes: seleccionados.map((cliente) => cliente.cuit),
+			clientes: seleccionados.map((cliente) => cliente.id), //necesito que esto sea por id
 		};
+		CrearPropiedad(data)
+			.then((data) => console.log(data))
+			.catch((error) => console.error("Error:", error))
+			.finally(() => {
+				window.location.href = "/propiedades";
+			});
 	};
 
 	return (

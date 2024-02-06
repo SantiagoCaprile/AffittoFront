@@ -8,6 +8,7 @@ async function listarClientes() {
 		.then((datosClientes) =>
 			datosClientes.map((cliente) => {
 				return {
+					id: cliente._id,
 					cuit: cliente.cuit,
 					nombre_razon_social: cliente.nombre_razon_social,
 					celular: cliente.celular,
@@ -53,7 +54,6 @@ const SelectorClientes = ({ setSeleccionados, titulo }) => {
 		setFilter("");
 		setFilteredClientes(updatedClientes);
 		setClientes(updatedClientes);
-
 		setSeleccionados(updatedClientes.filter((cliente) => cliente.selected));
 	};
 	const getSelectedClientes = () => {
@@ -96,7 +96,7 @@ const SelectorClientes = ({ setSeleccionados, titulo }) => {
 						filteredClientes.slice(0, 7).map((cliente) =>
 							cliente.selected ? null : (
 								<tr
-									key={cliente.cuit}
+									key={cliente.id}
 									onClick={() => handleClienteClick(cliente)}
 									className={`${styles.tr} ${
 										cliente.selected ? styles.selected : ""
