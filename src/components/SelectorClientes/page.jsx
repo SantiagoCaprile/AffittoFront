@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { get } from "react-hook-form";
 
 async function listarClientes() {
 	const listaClientes = await fetch("http://localhost:3000/api/v1/clientes")
