@@ -24,7 +24,22 @@ const GestionUsuariosPage = () => {
 	};
 
 	const resetPassword = (userId) => {
-		//falta ver como implementar si asigna una contaseña random o le manda un mail
+		fetch(`http://localhost:3000/usuarios/restart`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ id: userId }),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+				alert("Contraseña reiniciada");
+			})
+			.catch((error) => {
+				console.error("Error resetting password:", error);
+				alert("Error al reiniciar contraseña");
+			});
 	};
 
 	useEffect(() => {
@@ -74,12 +89,12 @@ const GestionUsuariosPage = () => {
 					<tbody>
 						{filteredUsers ? (
 							filteredUsers.map((user) => (
-								<tr key={user.id} className={styles.tr}>
+								<tr key={user._id} className={styles.tr}>
 									<td>{user.nombre ?? "@example.com"}</td>
 									<td>{user.rol ?? "No asignado"}</td>
 									<td>
 										<button
-											onClick={() => resetPassword(user.id)}
+											onClick={() => resetPassword(user._id)}
 											className="bg-blue-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
 										>
 											Resetear contraseña
