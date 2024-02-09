@@ -3,26 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-
-async function listarPropiedades() {
-	const listaPropiedades = await fetch("http://localhost:3000/propiedades")
-		.then((response) => response.json())
-		.then((data) => data.data)
-		.then((datosPropiedades) =>
-			datosPropiedades.map((prop) => {
-				return {
-					tipo: prop.tipo,
-					dimension: prop.dimension,
-					domicilio: prop.domicilio, //calle, altura, localidad
-					precio: prop.precio,
-					moneda: prop.moneda,
-					estado: prop.estado,
-					_id: prop._id,
-				};
-			})
-		);
-	return listaPropiedades;
-}
+import Propiedad from "@/classes/Propiedad";
 
 //columnas que tiene que tener la tabla
 //tipo, dimension, domicilio.calle+ domicilio.altura, domicilio.localidad, precio + moneda, ver mas
@@ -37,7 +18,7 @@ export default function PropiedadesPage() {
 
 	useEffect(() => {
 		async function fetchData() {
-			const propiedades = await listarPropiedades();
+			const propiedades = await Propiedad.fetchPropiedades();
 			setProps(propiedades);
 			setFiltradas(propiedades);
 		}

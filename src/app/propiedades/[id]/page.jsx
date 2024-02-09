@@ -4,6 +4,7 @@ import NextImage from "next/image";
 import { useState, useEffect } from "react";
 import { Pencil, ChevronLeft } from "lucide-react";
 import Link from "next/link";
+import Propiedad from "@/classes/Propiedad";
 
 const images = [
 	"/images/house1.webp",
@@ -11,12 +12,6 @@ const images = [
 	"/images/house3.webp",
 ];
 
-const buscarPropiedad = async (_id) => {
-	const response = await fetch("http://localhost:3000" + "/propiedades/" + _id)
-		.then((response) => response.json())
-		.then((data) => data.data);
-	return response;
-};
 //datos que debe tener
 //domicilio, localidad, tipo de propiedad, superficie, descripcion
 //precio, estado actual
@@ -29,7 +24,7 @@ const InfoPropiedadPage = () => {
 	useEffect(() => {
 		const _id = document.location.pathname.split("/")[2];
 		async function fetchData() {
-			const propiedad = await buscarPropiedad(_id);
+			const propiedad = await Propiedad.buscarPropiedad(_id);
 			setPropiedad(propiedad);
 			console.log(propiedad);
 		}

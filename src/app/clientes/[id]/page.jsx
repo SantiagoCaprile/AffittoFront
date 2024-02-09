@@ -4,21 +4,14 @@ import NextImage from "next/image";
 import { Pencil, ChevronLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-const buscarCliente = async (cuit) => {
-	const response = await fetch(`http://localhost:3000/api/v1/clientes/${cuit}`)
-		.then((response) => response.json())
-		.then((data) => data.data);
-	return response;
-};
+import Cliente from "@/classes/Cliente";
 
 const InfoClientePage = () => {
 	const [cliente, setCliente] = useState({});
-
 	useEffect(() => {
 		const cuit = document.location.pathname.split("/")[2];
 		async function fetchData() {
-			const cliente = await buscarCliente(cuit);
+			const cliente = await Cliente.buscarCliente(cuit);
 			setCliente(cliente);
 		}
 		fetchData();
@@ -64,7 +57,7 @@ const InfoClientePage = () => {
 							<span>
 								{(cliente.domicilio?.calle ?? "") +
 									" " +
-									(cliente.domicilio?.numero ?? "") +
+									(cliente.domicilio?.altura ?? "") +
 									" " +
 									(cliente.domicilio?.piso ?? "") +
 									" " +

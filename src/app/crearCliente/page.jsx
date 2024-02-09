@@ -1,35 +1,7 @@
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";
-
-const GuardarCliente = async (data) => {
-	const cliente = {
-		nombre_razon_social: data.nombre,
-		cuit: data.cuit,
-		condicion_iva: data.iva,
-		email: data.mail,
-		celular: data.celular,
-		telefono: data.telefono,
-		domicilio: {
-			localidad: data.localidad,
-			calle: data.calle,
-			altura: data.altura,
-			piso: data.piso,
-			dpto: data.dpto,
-		},
-	};
-	//fetch a la api para guardar el cliente
-	fetch("http://localhost:3000/api/v1/clientes", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(cliente),
-	})
-		.then((response) => response.json())
-		.then((data) => console.log(data))
-		.catch((error) => console.error("Error:", error));
-};
+import Cliente from "@/classes/Cliente";
 
 export default function CrearClientePage() {
 	const {
@@ -40,13 +12,9 @@ export default function CrearClientePage() {
 
 	const onSubmit = (data) => {
 		console.log(data);
-		GuardarCliente(data)
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error("Error:", error))
-			.finally(() => {
-				window.location.href = "/clientes";
-			});
+		Cliente.crearCliente(data).finally(() => {
+			window.location.href = "/clientes";
+		});
 	};
 
 	return (

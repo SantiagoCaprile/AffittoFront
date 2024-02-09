@@ -1,5 +1,5 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { verifyCredentials } from "../../../../lib/auth";
+import Usuario from "@/classes/Usuario";
 
 export const options = {
 	providers: [
@@ -20,7 +20,7 @@ export const options = {
 			async authorize(credentials) {
 				// Call the API to verify the credentials and get the user object
 				try {
-					const user = await verifyCredentials(credentials);
+					const user = await Usuario.verifyCredentials(credentials);
 					if (user.user || user.valid) {
 						console.log(user);
 						// Return an object with the user's name, email, and role

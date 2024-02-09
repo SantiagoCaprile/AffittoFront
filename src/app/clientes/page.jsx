@@ -3,23 +3,7 @@ import React from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-async function listarClientes() {
-	const listaClientes = await fetch("http://localhost:3000/api/v1/clientes")
-		.then((response) => response.json())
-		.then((data) => data.data)
-		.then((datosClientes) =>
-			datosClientes.map((cliente) => {
-				return {
-					cuit: cliente.cuit,
-					nombre_razon_social: cliente.nombre_razon_social,
-					celular: cliente.celular,
-					email: cliente.email,
-				};
-			})
-		);
-	return listaClientes;
-}
+import Cliente from "@/classes/Cliente";
 
 export default function ClientesPage() {
 	const [clientes, setClientes] = useState([]);
@@ -28,7 +12,7 @@ export default function ClientesPage() {
 
 	useEffect(() => {
 		async function fetchData() {
-			const listaclientes = await listarClientes();
+			const listaclientes = await Cliente.fetchClientes();
 			setClientes(listaclientes);
 			setFilteredClientes(listaclientes);
 		}

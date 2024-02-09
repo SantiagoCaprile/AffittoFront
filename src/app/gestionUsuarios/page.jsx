@@ -1,20 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Usuario from "@/classes/usuario";
 
 const GestionUsuariosPage = () => {
 	const [users, setUsers] = useState([]);
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
-
-	const fetchUsers = async () => {
-		try {
-			const response = await fetch("http://localhost:3000/usuarios");
-			const data = await response.json();
-			return data.data;
-		} catch (error) {
-			console.error("Error fetching users:", error);
-		}
-	};
 
 	const filterUsers = () => {
 		const filtered = users.filter((user) =>
@@ -23,27 +14,8 @@ const GestionUsuariosPage = () => {
 		setFilteredUsers(filtered);
 	};
 
-	const resetPassword = (userId) => {
-		fetch(`http://localhost:3000/usuarios/restart`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ id: userId }),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-				alert("Contraseña reiniciada");
-			})
-			.catch((error) => {
-				console.error("Error resetting password:", error);
-				alert("Error al reiniciar contraseña");
-			});
-	};
-
 	useEffect(() => {
-		fetchUsers().then((data) => {
+		Usuario.fetchUsers().then((data) => {
 			setUsers(data);
 			setFilteredUsers(data);
 		});
@@ -94,7 +66,7 @@ const GestionUsuariosPage = () => {
 									<td>{user.rol ?? "No asignado"}</td>
 									<td>
 										<button
-											onClick={() => resetPassword(user._id)}
+											onClick={() => Usuario.resetPassword(user._id)}
 											className="bg-blue-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
 										>
 											Resetear contraseña
