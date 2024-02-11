@@ -5,6 +5,10 @@ import { useState, useEffect } from "react";
 import { Pencil, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import Propiedad from "@/classes/Propiedad";
+import CargarPago from "@/components/CargarPago/page";
+import SelectorClientes from "@/components/SelectorClientes/page";
+import OperacionNueva from "@/components/OperacionNueva/page";
+import OperacionInfo from "@/components/OperacionInfo/page";
 
 const images = [
 	"/images/house1.webp",
@@ -20,12 +24,17 @@ const images = [
 const InfoPropiedadPage = () => {
 	const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
 	const [propiedad, setPropiedad] = useState({});
+	const [agregarPago, setAgregarPago] = useState(false);
+	const [verOperaciones, setverOperaciones] = useState(false);
+	const [operacionSeleccionada, setOperacionSeleccionada] = useState(null);
+	const [operaciones, setOperaciones] = useState([]);
 
 	useEffect(() => {
 		const _id = document.location.pathname.split("/")[2];
 		async function fetchData() {
 			const propiedad = await Propiedad.buscarPropiedad(_id);
 			setPropiedad(propiedad);
+			setOperaciones(propiedad.operaciones);
 			console.log(propiedad);
 		}
 		fetchData();
@@ -35,8 +44,14 @@ const InfoPropiedadPage = () => {
 		setImagenSeleccionada(index);
 	};
 
+	const toggleOperacionSeleccionada = (operacion) => {
+		operacionSeleccionada === operacion
+			? setOperacionSeleccionada(null)
+			: setOperacionSeleccionada(operacion);
+	};
+
 	return (
-		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF] p-4">
+		<div className="flex flex-1 flex-col justify-center items-center bg-[#E8EFFF] p-4">
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-3/4">
 				<div className="flex justify-between mb-4">
 					<h2 className="text-2xl font-bold mb-4">Información de Propiedad</h2>
@@ -130,23 +145,35 @@ const InfoPropiedadPage = () => {
 						</div>
 						<div className="flex gap-4 items-center pb-4">
 							<button
-								{...(propiedad.estado === "Disponible" ? "" : "disabled")}
-								className={
-									(propiedad.estado !== "Disponible" ? styles.disabled : "") +
-									" bg-green-500 hover:bg-green-600 transition-all text-white px-4 py-2 rounded-md "
-								}
+								className="bg-orange-500 hover:bg-orange-600 transition-all text-white px-4 py-2 rounded-md"
+								onClick={() => setverOperaciones(!verOperaciones)}
 							>
-								Alquilar
+								{verOperaciones ? "Ocultar Operaciones" : "Ver Operaciones"}
+							</button>
+							<button
+								disabled={propiedad.estado !== "Disponible"}
+								className={
+									styles.button +
+									(propiedad.estado !== "Disponible"
+										? styles.disabled
+										: "bg-green-500 hover:bg-green-600")
+								}
+								onClick={() => window.location.replace("/crearContrato")}
+							>
+								Nuevo Contrato
 							</button>
 							<button className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md">
 								Vender
 							</button>
 							<button
-								{...(propiedad.estado === "Disponible" ? "" : "disabled")}
+								disabled={propiedad.estado !== "Disponible"}
 								className={
-									(propiedad.estado !== "Disponible" ? styles.disabled : "") +
-									" bg-yellow-500 hover:bg-yellow-600 transition-all text-white px-4 py-2 rounded-md"
+									styles.button +
+									(propiedad.estado !== "Disponible"
+										? styles.disabled
+										: "bg-yellow-500 hover:bg-yellow-600")
 								}
+								onClick={() => setAgregarPago(!agregarPago)}
 							>
 								Señar
 							</button>
@@ -154,11 +181,58 @@ const InfoPropiedadPage = () => {
 					</div>
 				</div>
 			</div>
+			{verOperaciones && (
+				<div className="flex flex-1 justify-center px-8 pt-6 pb-8 mb-4 gap-2">
+					{operacionSeleccionada && (
+						<OperacionNueva
+							operacion={operacionSeleccionada}
+							idProp={propiedad._id}
+							fuerzaUpdate={() => {
+								Propiedad.buscarPropiedad(propiedad._id).then((prop) => {
+									setOperaciones(prop.operaciones);
+									setOperacionSeleccionada(null);
+								});
+							}}
+						/>
+					)}
+
+					<div className="flex gap-1 flex-wrap justify-center h-fit w-2/3">
+						{operaciones?.map((operacion, index) => (
+							<OperacionInfo
+								key={index}
+								onClick={
+									operacionSeleccionada
+										? () => setOperacionSeleccionada(null)
+										: () => toggleOperacionSeleccionada(operacion)
+								}
+								operacion={operacion}
+							/>
+						))}
+						<button
+							className="bg-green-500 hover:bg-green-600 text-clip h-[250px] w-[270px] transition-all text-white px-4 py-4	 rounded-md"
+							onClick={() => {
+								operacionSeleccionada
+									? setOperacionSeleccionada(null)
+									: setOperacionSeleccionada({});
+							}}
+						>
+							Agregar Operación
+						</button>
+					</div>
+				</div>
+			)}
+			{agregarPago && (
+				<div className={`flex flex-1 px-8 pt-6 pb-8 mb-4 gap-2`}>
+					<SelectorClientes />
+					<CargarPago />
+				</div>
+			)}
 		</div>
 	);
 };
 
 const styles = {
+	button: "transition-all text-white px-4 py-2 rounded-md ",
 	disabled: "bg-gray-500 cursor-not-allowed",
 };
 
