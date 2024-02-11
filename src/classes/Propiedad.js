@@ -14,6 +14,7 @@ class Propiedad {
 			piso: data.piso,
 			dpto: data.dpto,
 		};
+		this.operaciones = data.operaciones;
 		this.propietario = data.clientes[0];
 	}
 
@@ -52,6 +53,42 @@ class Propiedad {
 
 	static async buscarPropiedad(_id) {
 		const response = await fetch(`${this.URL}/${_id}`)
+			.then((response) => response.json())
+			.then((data) => data.data);
+		return response;
+	}
+
+	static async agregarOperacion(_id, operacion) {
+		console.log("URL", `${this.URL}/${_id}/operacion`);
+		const response = await fetch(`${this.URL}/${_id}/operacion`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(operacion),
+		})
+			.then((response) => response.json())
+			.then((data) => data.data);
+		return response;
+	}
+
+	static async editarOperacion(_id, idOp, operacion) {
+		const response = await fetch(`${this.URL}/${_id}/operacion/${idOp}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(operacion),
+		})
+			.then((response) => response.json())
+			.then((data) => data.data);
+		return response;
+	}
+
+	static async borrarOperacion(_id, idOp) {
+		const response = await fetch(`${this.URL}/${_id}/operacion/${idOp}`, {
+			method: "DELETE",
+		})
 			.then((response) => response.json())
 			.then((data) => data.data);
 		return response;
