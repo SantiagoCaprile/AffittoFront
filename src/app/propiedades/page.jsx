@@ -10,7 +10,6 @@ import Propiedad from "@/classes/Propiedad";
 export default function PropiedadesPage() {
 	const [props, setProps] = useState([]);
 	const [filtradas, setFiltradas] = useState([]);
-	const [operacion, setOperacion] = useState("");
 	const {
 		register,
 		handleSubmit,
