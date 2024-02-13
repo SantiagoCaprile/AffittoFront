@@ -10,6 +10,7 @@ import Propiedad from "@/classes/Propiedad";
 export default function PropiedadesPage() {
 	const [props, setProps] = useState([]);
 	const [filtradas, setFiltradas] = useState([]);
+	const [operacion, setOperacion] = useState("");
 	const {
 		register,
 		handleSubmit,
@@ -27,10 +28,15 @@ export default function PropiedadesPage() {
 
 	const filtrarPropiedades = async (data) => {
 		const listaFiltrada = props.filter((prop) => {
-			if (data.tipo !== "" && data.tipo !== prop.tipo) return false;
-			if (data.moneda !== "" && data.moneda !== prop.moneda) return false;
-			if (data.min && data.min > prop.precio) return false;
-			if (data.max && data.max < prop.precio) return false;
+			if (
+				data?.operacion !== "" &&
+				!prop.operaciones.some((op) => op.tipo === data.operacion)
+			)
+				return false;
+			if (data?.tipo !== "" && data.tipo !== prop.tipo) return false;
+			if (data?.moneda !== "" && data.moneda !== prop.moneda) return false;
+			if (data?.min && data.min > prop.precio) return false;
+			if (data?.max && data.max < prop.precio) return false;
 			return true;
 		});
 		setFiltradas(listaFiltrada);
@@ -44,34 +50,44 @@ export default function PropiedadesPage() {
 		document.getElementsByName("max")[0].value = "";
 	};
 
+	const mostrarSoloAlquiladas = () => {
+		const alquiladas = props.filter((prop) => prop.estado === "Alquilada");
+		setFiltradas(alquiladas);
+	};
+
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF]">
 			<div className="shadow-md rounded px-8 pb-8 mb-4 max-w-[1200px] w-4/5 bg-white">
-				<h1 className="text-2xl font-bold py-4">Propiedades</h1>
 				<div className="p-4">
-					<div>
-						<div className="flex justify-between">
-							<div>
-								<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mr-2">
-									Alquileres
-								</button>
+					<div className="flex justify-between items-center">
+						<h1 className="text-2xl font-bold py-4">Propiedades</h1>
+						<div>
+							<Link href="/crearPropiedad">
 								<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-									Ventas
+									Nueva +
 								</button>
-							</div>
-							<div>
-								<Link href="/crearPropiedad">
-									<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-										Nueva +
-									</button>
-								</Link>
-								<button className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 rounded ml-2">
-									Alquiladas
-								</button>
-							</div>
+							</Link>
+							<button
+								className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 rounded ml-2"
+								onClick={mostrarSoloAlquiladas}
+							>
+								Alquiladas
+							</button>
 						</div>
 					</div>
 					<div className="flex py-4 justify-between">
+						<select
+							className="border-x-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
+							name="operacion"
+							id="operacion"
+							{...register("operacion")}
+						>
+							<option value="" defaultValue>
+								Operación
+							</option>
+							<option value="Alquiler">Alquiler</option>
+							<option value="Venta">Venta</option>
+						</select>
 						<select
 							className="border-x-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
 							name="tipo"

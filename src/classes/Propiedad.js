@@ -37,15 +37,7 @@ class Propiedad {
 			.then((data) => data.data)
 			.then((datosPropiedades) =>
 				datosPropiedades.map((prop) => {
-					return {
-						tipo: prop.tipo,
-						dimension: prop.dimension,
-						domicilio: prop.domicilio, //calle, altura, piso, localidad
-						precio: prop.precio,
-						moneda: prop.moneda,
-						estado: prop.estado,
-						_id: prop._id,
-					};
+					return prop;
 				})
 			);
 		return listaPropiedades;
