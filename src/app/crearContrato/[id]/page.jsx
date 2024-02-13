@@ -2,6 +2,9 @@
 import SelectorClientes from "@/components/SelectorClientes/page";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import Contrato from "@/classes/Contrato";
+
+let propiedadId = document?.location?.pathname?.split("/")[2];
 
 export default function CrearContratoPage() {
 	const {
@@ -11,7 +14,23 @@ export default function CrearContratoPage() {
 	} = useForm();
 	const [garantes, setGarantes] = useState([]);
 	const [locador, setLocador] = useState([]);
-	const onSubmit = (data) => console.log(data, garantes, locador);
+	const onSubmit = (data) => {
+		const contrato = new Contrato({
+			...data,
+			locador: locador[0].id,
+			garantes: garantes.map((garante) => garante.id),
+			propiedad: propiedadId,
+		});
+		contrato
+			.crearContrato()
+			.then(() => {
+				console.log("contrato creado");
+				window.location.href = `/propiedades/${propiedadId}`;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF] pt-4 gap-2">
@@ -36,8 +55,9 @@ export default function CrearContratoPage() {
 							})}
 						>
 							<option value="">Seleccione</option>
-							<option value="Vivienda Familiar">Vivienda Familiar</option>
+							<option value="Vivienda">Vivienda</option>
 							<option value="Comercial">Comercial</option>
+							<option value="Industrial">Industrial</option>
 						</select>
 					</fieldset>
 					<fieldset className={styles.fieldset}>
@@ -51,7 +71,7 @@ export default function CrearContratoPage() {
 							className={
 								styles.inputs + (errors["fecha-inicio"] && styles.inputError)
 							}
-							{...register("fecha-inicio", {
+							{...register("fecha_inicio", {
 								required: {
 									value: true,
 									message: "Fecha de inicio es requerida",
@@ -70,7 +90,7 @@ export default function CrearContratoPage() {
 							className={
 								styles.inputs + (errors["fecha-fin"] && styles.inputError)
 							}
-							{...register("fecha-fin", {
+							{...register("fecha_fin", {
 								required: {
 									value: true,
 									message: "Fecha de fin es requerida",
@@ -126,6 +146,7 @@ export default function CrearContratoPage() {
 								<option value="">Seleccione</option>
 								<option value="ARS">ARS</option>
 								<option value="USD">USD</option>
+								<option value="EUR">EUR</option>
 							</select>
 						</fieldset>
 					</div>
@@ -139,9 +160,10 @@ export default function CrearContratoPage() {
 							name="intereses"
 							id="intereses"
 							className={
-								styles.inputs + (errors.intereses && styles.inputError)
+								styles.inputs +
+								(errors["intereses_mora_diaria"] && styles.inputError)
 							}
-							{...register("intereses", {
+							{...register("intereses_mora_diaria", {
 								min: {
 									value: 0,
 									message: "Intereses debe ser mayor a 0",
@@ -160,9 +182,9 @@ export default function CrearContratoPage() {
 							id="comision-mensual"
 							className={
 								styles.inputs +
-								(errors["comision-mensual"] && styles.inputError)
+								(errors["comision_mensual"] && styles.inputError)
 							}
-							{...register("comision-mensual")}
+							{...register("comision_mensual")}
 						/>
 					</fieldset>
 					<fieldset className={styles.fieldset}>
@@ -176,9 +198,9 @@ export default function CrearContratoPage() {
 							id="comision-celebracion"
 							className={
 								styles.inputs +
-								(errors["comision-celebracion"] && styles.inputError)
+								(errors["comision_celebracion"] && styles.inputError)
 							}
-							{...register("comision-celebracion")}
+							{...register("comision_celebracion")}
 						/>
 					</fieldset>
 					<hr className="mb-4" />
@@ -192,8 +214,14 @@ export default function CrearContratoPage() {
 							cols="30"
 							rows="10"
 							placeholder="Objetos que se entregan con la propiedad, condiciones de entrega, cláusulas especiales, etc."
-							className={styles.inputs + " resize-none"}
-							{...register("observaciones")}
+							className={
+								styles.inputs +
+								" resize-none " +
+								(errors.observaciones && styles.inputError)
+							}
+							{...register("observaciones", {
+								maxLength: { value: 700, message: "Máximo 500 caracteres" },
+							})}
 						></textarea>
 					</fieldset>
 					<button type="submit" className={styles.button}>

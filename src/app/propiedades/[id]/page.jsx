@@ -158,7 +158,9 @@ const InfoPropiedadPage = () => {
 										? styles.disabled
 										: "bg-green-500 hover:bg-green-600")
 								}
-								onClick={() => window.location.replace("/crearContrato")}
+								onClick={() =>
+									window.location.replace(`/crearContrato/${propiedad._id}`)
+								}
 							>
 								Nuevo Contrato
 							</button>
