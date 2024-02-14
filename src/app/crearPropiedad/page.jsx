@@ -240,6 +240,7 @@ export default function CrearPropiedadPage() {
 			<SelectorClientes
 				setSeleccionados={setSeleccionados}
 				titulo={"Propietarios"}
+				maximo={1}
 			/>
 		</div>
 	);

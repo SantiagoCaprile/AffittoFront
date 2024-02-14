@@ -254,8 +254,16 @@ export default function CrearContratoPage() {
 				</form>
 			</div>
 			<div className="flex flex-col gap-2 w-1/2">
-				<SelectorClientes setSeleccionados={setLocador} titulo="Locador" />
-				<SelectorClientes setSeleccionados={setGarantes} titulo="Garantes" />
+				<SelectorClientes
+					setSeleccionados={setLocador}
+					titulo="Locador"
+					maximo={1}
+				/>
+				<SelectorClientes
+					setSeleccionados={setGarantes}
+					titulo="Garantes"
+					maximo={5}
+				/>
 			</div>
 		</div>
 	);

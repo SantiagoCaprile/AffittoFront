@@ -19,10 +19,11 @@ async function listarClientes() {
 	return listaClientes;
 }
 
-const SelectorClientes = ({ setSeleccionados, titulo }) => {
+const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 	const [clientes, setClientes] = useState([]);
 	const [filteredClientes, setFilteredClientes] = useState([]);
 	const [filter, setFilter] = useState("");
+	const [mostrarError, setMostrarError] = useState(false);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -32,6 +33,14 @@ const SelectorClientes = ({ setSeleccionados, titulo }) => {
 		}
 		fetchData();
 	}, []);
+
+	const canSelect = () => {
+		if (maximo > 0 && getSelectedClientes().length > maximo - 1) {
+			setMostrarError(true);
+			return false;
+		}
+		return true;
+	};
 
 	const handleFilterChange = (event) => {
 		const value = event.target.value;
@@ -45,7 +54,10 @@ const SelectorClientes = ({ setSeleccionados, titulo }) => {
 	const handleClienteClick = (cliente) => {
 		const updatedClientes = clientes.map((c) => {
 			if (c.cuit === cliente.cuit) {
-				return { ...c, selected: !c.selected };
+				if (canSelect() || c.selected) {
+					c.selected = !c.selected;
+					setMostrarError(false);
+				}
 			}
 			return c;
 		});
@@ -62,6 +74,11 @@ const SelectorClientes = ({ setSeleccionados, titulo }) => {
 	return (
 		<div className="flex flex-col bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h2 className="text-2xl text-black font-bold mb-4">{titulo}</h2>
+			{mostrarError && (
+				<p className="text-red-500">
+					Maximo de {titulo.toLowerCase()} seleccionable: {maximo}
+				</p>
+			)}
 			<input
 				type="text"
 				placeholder="Filtro por nombre o CUIT"
