@@ -1,12 +1,12 @@
 "use client";
 import SelectorClientes from "@/components/SelectorClientes/page";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Contrato from "@/classes/Contrato";
 
-let propiedadId = document?.location?.pathname?.split("/")[2];
-
 export default function CrearContratoPage() {
+	const router = useRouter();
 	const {
 		register,
 		handleSubmit,
@@ -14,23 +14,38 @@ export default function CrearContratoPage() {
 	} = useForm();
 	const [garantes, setGarantes] = useState([]);
 	const [locador, setLocador] = useState([]);
-	const onSubmit = (data) => {
+	const [propiedadId, setPropiedadId] = useState("");
+	const [envio, setEnvio] = useState({
+		loading: false,
+		error: false,
+		sent: false,
+	});
+
+	useEffect(() => {
+		setPropiedadId(window.location.pathname.split("/")[2]);
+	}, []);
+
+	const onSubmit = async (data) => {
+		console.log(propiedadId);
 		const contrato = new Contrato({
 			...data,
 			locador: locador[0].id,
 			garantes: garantes.map((garante) => garante.id),
 			propiedad: propiedadId,
 		});
-		contrato
-			.crearContrato()
-			.then(() => {
-				console.log("contrato creado");
-				window.location.href = `/propiedades/${propiedadId}`;
+		await contrato
+			.crearContrato(setEnvio)
+			.then((data) => {
+				console.log(data);
 			})
-			.catch((err) => {
-				console.log(err);
+			.catch((error) => {
+				console.error("Error:", error);
 			});
 	};
+
+	if (envio.error) {
+		router.push(`/propiedades/${propiedadId}`);
+	}
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF] pt-4 gap-2">
@@ -224,9 +239,18 @@ export default function CrearContratoPage() {
 							})}
 						></textarea>
 					</fieldset>
-					<button type="submit" className={styles.button}>
-						Crear nuevo contrato
+					<button
+						type="submit"
+						className={styles.button}
+						disabled={envio.loading || envio.sent}
+					>
+						{envio.loading ? <p>Espere por favor</p> : <p>Crear Contrato</p>}
 					</button>
+					{envio.error && (
+						<p className={styles.errors}>
+							Error al enviar, verifique los datos o intentelo más tarde
+						</p>
+					)}
 				</form>
 			</div>
 			<div className="flex flex-col gap-2 w-1/2">

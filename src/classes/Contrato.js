@@ -20,7 +20,8 @@ class Contrato {
 		this.garantes = contrato.garantes;
 	}
 
-	async crearContrato() {
+	async crearContrato(setState) {
+		setState({ loading: true });
 		fetch("http://localhost:3000/api/v1/contratos", {
 			method: "POST",
 			headers: {
@@ -32,10 +33,14 @@ class Contrato {
 				if (!response.ok) {
 					throw new Error("Network response was not ok");
 				}
+				setState({ sent: true, loading: false, error: false });
 				return response.json();
 			})
 			.then((data) => console.log(data))
-			.catch((error) => console.error("Error:", error));
+			.catch((error) => {
+				console.error("Error:", error);
+				setState({ loading: false, error: true });
+			});
 	}
 }
 
