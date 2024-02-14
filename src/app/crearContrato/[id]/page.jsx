@@ -43,7 +43,7 @@ export default function CrearContratoPage() {
 			});
 	};
 
-	if (envio.error) {
+	if (envio.sent) {
 		router.push(`/propiedades/${propiedadId}`);
 	}
 
