@@ -166,43 +166,6 @@ export default function CrearContratoPage() {
 						</fieldset>
 					</div>
 					<fieldset className={styles.fieldset}>
-						<label htmlFor="intereses" className={styles.label}>
-							Intereses por mora diaria
-						</label>
-						<input
-							type="number"
-							min={0}
-							name="intereses"
-							id="intereses"
-							className={
-								styles.inputs +
-								(errors["intereses_mora_diaria"] && styles.inputError)
-							}
-							{...register("intereses_mora_diaria", {
-								min: {
-									value: 0,
-									message: "Intereses debe ser mayor a 0",
-								},
-							})}
-						/>
-					</fieldset>
-					<fieldset className={styles.fieldset}>
-						<label htmlFor="comision-mensual" className={styles.label}>
-							% comisión mensual
-						</label>
-						<input
-							type="number"
-							min={0}
-							name="comision-mensual"
-							id="comision-mensual"
-							className={
-								styles.inputs +
-								(errors["comision_mensual"] && styles.inputError)
-							}
-							{...register("comision_mensual")}
-						/>
-					</fieldset>
-					<fieldset className={styles.fieldset}>
 						<label htmlFor="comision-celebracion" className={styles.label}>
 							% comisión celebración contrato
 						</label>
@@ -228,7 +191,7 @@ export default function CrearContratoPage() {
 							id="observaciones"
 							cols="30"
 							rows="10"
-							placeholder="Objetos que se entregan con la propiedad, condiciones de entrega, cláusulas especiales, etc."
+							placeholder="Objetos que se entregan con la propiedad, condiciones de entrega, cláusulas especiales, actualizaciones según que índice etc."
 							className={
 								styles.inputs +
 								" resize-none " +
