@@ -4,6 +4,7 @@ import { ChevronRight, Search } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import Propiedad from "@/classes/Propiedad";
+import { mostrarMontoSeparado } from "@/app/utils/utils";
 
 //columnas que tiene que tener la tabla
 //tipo, dimension, domicilio.calle+ domicilio.altura, domicilio.localidad, precio + moneda, ver mas
@@ -13,14 +14,24 @@ export default function PropiedadesPage() {
 	const {
 		register,
 		handleSubmit,
+		getValues,
+		setValue,
 		formState: { errors },
-	} = useForm();
+	} = useForm({
+		defaultValues: {
+			operacion: "Alquiler",
+		},
+	});
 
 	useEffect(() => {
 		async function fetchData() {
 			const propiedades = await Propiedad.fetchPropiedades();
 			setProps(propiedades);
-			setFiltradas(propiedades);
+			setFiltradas(
+				propiedades.filter((prop) =>
+					prop.operaciones.some((op) => op.tipo === "Alquiler")
+				)
+			);
 		}
 		fetchData();
 	}, []);
@@ -33,20 +44,31 @@ export default function PropiedadesPage() {
 			)
 				return false;
 			if (data?.tipo !== "" && data.tipo !== prop.tipo) return false;
-			if (data?.moneda !== "" && data.moneda !== prop.moneda) return false;
-			if (data?.min && data.min > prop.precio) return false;
-			if (data?.max && data.max < prop.precio) return false;
+			if (
+				prop.operaciones.filter((op) => {
+					if (data?.moneda !== "" && data.moneda !== op.moneda) return false;
+					if (data?.min !== "" && data.min > op.monto) return false;
+					if (data?.max !== "" && data.max < op.monto) return false;
+					return true;
+				}).length === 0
+			)
+				return false;
 			return true;
 		});
 		setFiltradas(listaFiltrada);
 	};
 
 	const limpiarFiltros = () => {
-		setFiltradas(props);
-		document.getElementsByName("tipo")[0].value = "";
-		document.getElementsByName("moneda")[0].value = "";
-		document.getElementsByName("min")[0].value = "";
-		document.getElementsByName("max")[0].value = "";
+		setFiltradas(
+			props.filter((prop) =>
+				prop.operaciones.some((op) => op.tipo === "Alquiler")
+			)
+		);
+		setValue("operacion", "Alquiler");
+		setValue("tipo", "");
+		setValue("moneda", "");
+		setValue("min", "");
+		setValue("max", "");
 	};
 
 	const mostrarSoloAlquiladas = () => {
@@ -56,7 +78,7 @@ export default function PropiedadesPage() {
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF]">
-			<div className="shadow-md rounded px-8 pb-8 mb-4 max-w-[1200px] w-4/5 bg-white">
+			<div className="shadow-md rounded px-8 pb-8 mb-4 max-w-[1300px] w-4/5 bg-white">
 				<div className="p-4">
 					<div className="flex justify-between items-center">
 						<h1 className="text-2xl font-bold py-4">Propiedades</h1>
@@ -72,6 +94,17 @@ export default function PropiedadesPage() {
 							>
 								Alquiladas
 							</button>
+							<button
+								className="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-4 rounded ml-2"
+								onClick={() => {
+									setFiltradas(props);
+									{
+										setValue("operacion", "");
+									}
+								}}
+							>
+								Ver Todas
+							</button>
 						</div>
 					</div>
 					<div className="flex py-4 justify-between">
@@ -81,10 +114,10 @@ export default function PropiedadesPage() {
 							id="operacion"
 							{...register("operacion")}
 						>
-							<option value="" defaultValue>
-								Operación
+							<option value="">Operación</option>
+							<option value="Alquiler" defaultValue>
+								Alquiler
 							</option>
-							<option value="Alquiler">Alquiler</option>
 							<option value="Venta">Venta</option>
 						</select>
 						<select
@@ -162,7 +195,14 @@ export default function PropiedadesPage() {
 							</tr>
 						) : (
 							filtradas.map((prop, index) => (
-								<tr key={index} className={styles.tr}>
+								<tr
+									key={index}
+									className={
+										styles.tr +
+										(prop.estado === "Alquilada" ? " bg-red-100" : "") +
+										(prop.estado === "Reservada" ? " bg-yellow-100" : "")
+									}
+								>
 									<td className={styles.td}>{prop.tipo}</td>
 									<td className={styles.td}>
 										{prop.dimension} m<sup>2</sup>
@@ -172,7 +212,27 @@ export default function PropiedadesPage() {
 									</td>
 									<td className={styles.td}>{prop.domicilio.localidad}</td>
 									<td className={styles.td}>
-										{mostrarMontoSeparado(prop.precio)} {prop.moneda}
+										{prop.operaciones.map((op, index) =>
+											getValues("operacion") === "" ? (
+												<p key={index} className="flex">
+													{mostrarMontoSeparado(op.monto) +
+														" " +
+														op.moneda +
+														" " +
+														op.tipo}
+												</p>
+											) : (
+												getValues("operacion") === op.tipo && (
+													<p key={index} className="flex">
+														{mostrarMontoSeparado(op.monto) +
+															" " +
+															op.moneda +
+															" " +
+															op.tipo}
+													</p>
+												)
+											)
+										)}
 									</td>
 									<td className={styles.td}>
 										<Link
@@ -199,13 +259,4 @@ const styles = {
 	button: "flex justify-center w-1/2 bg-blue-500 rounded-xl",
 	input:
 		"w-2/5 border-black border-b-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline",
-};
-
-const mostrarMontoSeparado = (monto) => {
-	const montoString = monto.toString();
-	const largo = montoString.length;
-	if (largo <= 3) return montoString;
-	const resto = montoString.slice(largo - 3, largo);
-	const parteEntera = montoString.slice(0, largo - 3);
-	return `${mostrarMontoSeparado(parteEntera)}.${resto}`;
 };
