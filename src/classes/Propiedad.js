@@ -14,21 +14,29 @@ class Propiedad {
 			piso: data.piso,
 			dpto: data.dpto,
 		};
+		this.ubicacion = {
+			lat: data.ubicacion.lat,
+			lng: data.ubicacion.lng,
+		};
 		this.operaciones = data.operaciones;
 		this.propietario = data.clientes[0];
 	}
 
 	static async CrearPropiedad(data) {
-		fetch(this.URL, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(new Propiedad(data)),
-		})
-			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error("Error:", error));
+		try {
+			const response = await fetch(this.URL, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(new Propiedad(data)),
+			});
+			const result = await response.json();
+			return result;
+		} catch (error) {
+			console.error("Error:", error);
+			return null;
+		}
 	}
 
 	static async fetchPropiedades() {
