@@ -36,7 +36,7 @@ export default function ClientesPage() {
 							className="border-b-4 border-blue-500 bg-slate-200 rounded py-2 px-4"
 							type="text"
 							name="nombre_razon_social"
-							placeholder="Nombre/Razon Social"
+							placeholder="Nombre/Razón Social"
 							onChange={(e) => setNombre(e.target.value)}
 							onKeyDown={(e) => (e.key == "Enter" ? filterClients() : null)}
 						/>
@@ -70,7 +70,7 @@ export default function ClientesPage() {
 				<table className="w-full text-m text-left text-gray-500 dark:text-gray-400">
 					<thead className="text-m text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
 						<tr className={styles.tr}>
-							<th className={styles.th}>Nombre/Razon Social</th>
+							<th className={styles.th}>Nombre/Razón Social</th>
 							<th className={styles.th}>CUIT/CUIL</th>
 							<th className={styles.th}>Celular</th>
 							<th className={styles.th}>E-Mail</th>
