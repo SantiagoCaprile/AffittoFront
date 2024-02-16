@@ -9,8 +9,6 @@ class Contrato {
 		this.fecha_entrega_inmueble = contrato.fecha_entrega_inmueble;
 		this.fecha_notificacion_fehaciente = contrato.fecha_notificacion_fehaciente;
 		this.comision_celebracion = contrato.comision_celebracion;
-		this.comision_mensual = contrato.comision_mensual;
-		this.intereses_mora_diaria = contrato.intereses_mora_diaria;
 		this.monto = contrato.monto;
 		this.moneda = contrato.moneda;
 		this.observaciones = contrato.observaciones;
