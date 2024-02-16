@@ -3,30 +3,76 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import SelectorClientes from "@/components/SelectorClientes/page";
 import Propiedad from "@/classes/Propiedad";
+import { useRouter } from "next/navigation";
+import Map from "@/components/Map";
+import opencage from "opencage-api-client";
+const API_KEY = process.env.NEXT_PUBLIC_OPENCAGE_API_KEY;
+
+const fetchGeocode = async (direccion) => {
+	return opencage
+		.geocode({ q: direccion, key: API_KEY })
+		.then((data) => {
+			if (data.results.length > 0) {
+				const place = data.results[0];
+				return place.geometry;
+			} else {
+				console.log("No results found");
+			}
+		})
+		.catch((error) => {
+			throw error;
+		});
+};
 
 export default function CrearPropiedadPage() {
+	const router = useRouter();
 	const {
 		register,
 		handleSubmit,
+		getValues,
 		formState: { errors },
 	} = useForm();
 	const [seleccionados, setSeleccionados] = useState([]);
+	const [mapa, setMapa] = useState(false);
+	const [ubicacion, setUbicacion] = useState({});
 
-	const onSubmit = (data) => {
+	const actualizarMapa = async () => {
+		const direccion = `${getValues("calle")} ${getValues(
+			"altura"
+		)}, ${getValues("localidad")}, Argentina`;
+		setMapa(false);
+		const ubicacion = await fetchGeocode(direccion);
+		setUbicacion(ubicacion);
+		setMapa(true);
+	};
+
+	const onSubmit = async (data) => {
+		if (ubicacion.lat === undefined || ubicacion.lng === undefined) {
+			alert("Debe visualizar la ubicación en el mapa antes de continuar");
+			return;
+		}
+		if (seleccionados.length !== 1) {
+			alert("Debe seleccionar un cliente");
+			return;
+		}
 		data = {
 			...data,
-			clientes: seleccionados.map((cliente) => cliente.id), //necesito que esto sea por id
+			clientes: seleccionados.map((cliente) => cliente.id),
+			ubicacion: {
+				lat: ubicacion.lat,
+				lng: ubicacion.lng,
+			},
 		};
 		Propiedad.CrearPropiedad(data)
-			.then((data) => console.log(data))
-			.catch((error) => console.error("Error:", error))
-			.finally(() => {
-				window.location.href = "/propiedades";
-			});
+			.then(
+				(data) => router.push(`/propiedades/${data.data._id}`),
+				alert("Propiedad creada")
+			)
+			.catch((error) => console.error("Error:", error));
 	};
 
 	return (
-		<div className="flex flex-1 gap-2 justify-center items-center bg-[#E8EFFF] p-4">
+		<div className="flex flex-1 gap-2 justify-center items-start bg-[#E8EFFF] p-4">
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-[600px] w-2/3">
 				<h2 className="text-2xl font-bold mb-4">
 					Ingrese los datos de la nueva propiedad
@@ -86,49 +132,10 @@ export default function CrearPropiedadPage() {
 						>
 							<option value="">Seleccione</option>
 							<option value="Disponible">Disponible</option>
-							<option value="Ocupada">Ocupada</option>
-							<option value="No disponible">No disponible</option>
+							<option value="Alquilada">Alquilada</option>
+							<option value="Reservada">Reservada</option>
 						</select>
 					</fieldset>
-					<div>
-						<div className="flex flex-wrap justify-center mb-4">
-							<fieldset className="mr-2 flex items-center">
-								<label htmlFor="precio" className={styles.label}>
-									Precio
-								</label>
-								<input
-									min={0}
-									type="number"
-									name="precio"
-									id="precio"
-									className={
-										styles.inputs + (errors.precio && styles.inputError)
-									}
-									{...register("precio", {
-										min: {
-											value: 0,
-											message: "Precio no puede ser negativo",
-										},
-									})}
-								/>
-							</fieldset>
-							<fieldset className="flex items-center">
-								<label htmlFor="moneda" className={styles.label}>
-									Moneda
-								</label>
-								<select
-									name="moneda"
-									id="moneda"
-									className={styles.inputs}
-									{...register("moneda")}
-								>
-									<option value="">Seleccione</option>
-									<option value="ARS">ARS</option>
-									<option value="USD">USD</option>
-								</select>
-							</fieldset>
-						</div>
-					</div>
 					<fieldset className="mb-4">
 						<label htmlFor="descripcion" className={styles.label}>
 							Descripción
@@ -232,16 +239,63 @@ export default function CrearPropiedadPage() {
 							</fieldset>
 						</div>
 					</div>
+					<button
+						className={styles.button}
+						onClick={(e) => {
+							e.preventDefault();
+							actualizarMapa();
+						}}
+					>
+						Ver Mapa
+					</button>
 					<button className={styles.button} type="submit">
 						Crear Propiedad
 					</button>
 				</form>
 			</div>
-			<SelectorClientes
-				setSeleccionados={setSeleccionados}
-				titulo={"Propietarios"}
-				maximo={1}
-			/>
+			<div className="flex flex-col gap-2">
+				<div className="w-full h-[300px] bg-slate-400">
+					{mapa && ubicacion ? (
+						<Map center={[ubicacion.lat, ubicacion.lng]} zoom={16}>
+							{({ TileLayer, Marker }) => (
+								<>
+									<TileLayer
+										url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+										attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+									/>
+									<Marker
+										position={[ubicacion.lat, ubicacion.lng]}
+										draggable={true}
+										eventHandlers={{
+											dragend: (e) => {
+												setUbicacion(e.target.getLatLng());
+											},
+										}}
+									/>
+								</>
+							)}
+						</Map>
+					) : (
+						<div className="flex justify-center items-center h-full">
+							{!ubicacion && !mapa && (
+								<h2 className="text-2xl font-bold text-white">
+									Ingrese la dirección para ver el mapa
+								</h2>
+							)}
+							{ubicacion && !mapa && (
+								<h2 className="text-2xl font-bold text-white">
+									Cargando Mapa...
+								</h2>
+							)}
+						</div>
+					)}
+				</div>
+				<SelectorClientes
+					setSeleccionados={setSeleccionados}
+					titulo={"Propietarios"}
+					maximo={1}
+				/>
+			</div>
 		</div>
 	);
 }
