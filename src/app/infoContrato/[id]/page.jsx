@@ -36,7 +36,7 @@ const contratoEjemplo = {
 		precio: 20000,
 		estado_actual: "Disponible",
 	},
-	locador: {
+	locatario: {
 		_id: "1234567890",
 		nombre_razon_social: "Esteban Quito",
 		cuit: "20-12345678-9",
@@ -135,21 +135,21 @@ export default function InfoContratoPage() {
 						</tr>
 					</thead>
 					<tbody className="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-						{contrato.locador && (
+						{contrato.locatario && (
 							<tr
-								key={contrato.locador._id}
+								key={contrato.locatario._id}
 								className={styles.tr}
 								onDoubleClick={() =>
-									router.push(`/clientes/${contrato.locador.cuit}`)
+									router.push(`/clientes/${contrato.locatario.cuit}`)
 								}
 							>
 								<td className={styles.td}>
-									{contrato.locador.nombre_razon_social}
+									{contrato.locatario.nombre_razon_social}
 								</td>
-								<td className={styles.td}>{contrato.locador.cuit}</td>
-								<td className={styles.td}>{contrato.locador.celular}</td>
-								<td className={styles.td}>{contrato.locador.email}</td>
-								<td className={styles.td}>Locador</td>
+								<td className={styles.td}>{contrato.locatario.cuit}</td>
+								<td className={styles.td}>{contrato.locatario.celular}</td>
+								<td className={styles.td}>{contrato.locatario.email}</td>
+								<td className={styles.td}>Locatario</td>
 							</tr>
 						)}
 						{contrato.propietario && (

@@ -13,7 +13,7 @@ export default function CrearContratoPage() {
 		formState: { errors },
 	} = useForm();
 	const [garantes, setGarantes] = useState([]);
-	const [locador, setLocador] = useState([]);
+	const [locatario, setlocatario] = useState([]);
 	const [propiedadId, setPropiedadId] = useState("");
 	const [envio, setEnvio] = useState({
 		loading: false,
@@ -29,7 +29,7 @@ export default function CrearContratoPage() {
 		console.log(propiedadId);
 		const contrato = new Contrato({
 			...data,
-			locador: locador[0].id,
+			locatario: locatario[0].id,
 			garantes: garantes.map((garante) => garante.id),
 			propiedad: propiedadId,
 		});
@@ -218,8 +218,8 @@ export default function CrearContratoPage() {
 			</div>
 			<div className="flex flex-col gap-2 w-1/2">
 				<SelectorClientes
-					setSeleccionados={setLocador}
-					titulo="Locador"
+					setSeleccionados={setlocatario}
+					titulo="locatario"
 					maximo={1}
 				/>
 				<SelectorClientes

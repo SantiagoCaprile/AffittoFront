@@ -14,7 +14,7 @@ class Contrato {
 		this.observaciones = contrato.observaciones;
 		this.pagos = contrato.pagos;
 		this.propiedad = contrato.propiedad;
-		this.locador = contrato.locador;
+		this.locatario = contrato.locatario;
 		this.garantes = contrato.garantes;
 	}
 
