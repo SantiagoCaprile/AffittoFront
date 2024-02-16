@@ -9,6 +9,7 @@ import CargarPago from "@/components/CargarPago/page";
 import SelectorClientes from "@/components/SelectorClientes/page";
 import OperacionNueva from "@/components/OperacionNueva/page";
 import OperacionInfo from "@/components/OperacionInfo/page";
+import Map from "@/components/Map";
 
 const images = [
 	"/images/house1.webp",
@@ -130,10 +131,12 @@ const InfoPropiedadPage = () => {
 							<span>{propiedad.dimension} m2</span>
 						</div>
 						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Precio:</label>
-							<span>
-								{propiedad.moneda === "USD" ? "U$S" : "$"} {propiedad.precio}
-							</span>
+							<label className="block font-bold">Operaciones:</label>
+							{
+								operaciones?.filter((op) => op.tipo === "Venta").length
+							} Ventas,{" "}
+							{operaciones?.filter((op) => op.tipo === "Alquiler").length}{" "}
+							Alquileres
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Estado:</label>
@@ -197,7 +200,6 @@ const InfoPropiedadPage = () => {
 							}}
 						/>
 					)}
-
 					<div className="flex gap-1 flex-wrap justify-center h-fit w-2/3">
 						{operaciones?.map((operacion, index) => (
 							<OperacionInfo
@@ -229,6 +231,35 @@ const InfoPropiedadPage = () => {
 					<CargarPago />
 				</div>
 			)}
+			<div className="w-2/3 h-[400px] bg-black">
+				{propiedad.ubicacion?.lat ? (
+					<Map
+						center={[propiedad.ubicacion.lat, propiedad.ubicacion.lng]}
+						zoom={16}
+					>
+						{({ TileLayer, Marker, Popup }) => (
+							<>
+								<TileLayer
+									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+									attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+								/>
+								<Marker
+									position={[propiedad.ubicacion.lat, propiedad.ubicacion.lng]}
+								>
+									<Popup>
+										{propiedad.domicilio?.calle} {propiedad.domicilio?.altura},{" "}
+										{propiedad.domicilio?.localidad}
+									</Popup>
+								</Marker>
+							</>
+						)}
+					</Map>
+				) : (
+					<div className="flex justify-center items-center h-full">
+						<h2 className="text-2xl font-bold text-white">Cargando Mapa...</h2>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };
