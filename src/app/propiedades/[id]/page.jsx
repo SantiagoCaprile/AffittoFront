@@ -9,12 +9,56 @@ import CargarPago from "@/components/CargarPago/page";
 import SelectorClientes from "@/components/SelectorClientes/page";
 import OperacionNueva from "@/components/OperacionNueva/page";
 import OperacionInfo from "@/components/OperacionInfo/page";
+import TasacionInfo from "@/components/TasacionInfo/page";
+import PosiblesInteresados from "@/components/PosiblesInteresados/page";
 import Map from "@/components/Map";
 
 const images = [
 	"/images/house1.webp",
 	"/images/house2.webp",
 	"/images/house3.webp",
+];
+
+const tasacion = {
+	fecha_visita: "2021-10-12",
+	fecha_tasacion: "2021-10-12",
+	valor: 100000,
+	moneda: "USD",
+	observaciones: "El tasador dijo que estaba en buen estado",
+	motivo: "Conocer el valor",
+	id: "1",
+	inmueble_id: "1",
+	antiguedad: "10-20",
+	nombre_tasador: "Juan Perez",
+	matricula: "4444444",
+	solicitante_id: "1",
+};
+
+const clientesInteresados = [
+	{
+		_id: "1",
+		nombre_razon_social: "Juan Perez",
+		celular: "3512345678",
+		email: "pepe",
+		cuit: "	20155555551",
+		operacion: "Alquiler",
+	},
+	{
+		_id: "2",
+		nombre_razon_social: "Jose Gomez",
+		celular: "3512345678",
+		email: "pepe",
+		cuit: "	20155555551",
+		operacion: "Venta",
+	},
+	{
+		_id: "3",
+		nombre_razon_social: "Maria Rodriguez",
+		celular: "3512345678",
+		email: "pepe",
+		cuit: "	20155555551",
+		operacion: "Alquiler",
+	},
 ];
 
 //datos que debe tener
@@ -56,20 +100,22 @@ const InfoPropiedadPage = () => {
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-3/4">
 				<div className="flex justify-between mb-4">
 					<h2 className="text-2xl font-bold mb-4">Información de Propiedad</h2>
-					<Link
-						href={"/propiedades/editar"}
-						className="flex gap-2 bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
-					>
-						<Pencil size={20} />
-						Editar
-					</Link>
-					<Link
-						href="/propiedades"
-						className="flex gap-2 bg-blue-300 hover:bg-blue-500 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
-					>
-						<ChevronLeft size={20} />
-						Volver
-					</Link>
+					<div className="flex gap-2">
+						<Link
+							href={"/propiedades/editar"}
+							className="flex gap-2 bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
+						>
+							<Pencil size={20} />
+							Editar
+						</Link>
+						<Link
+							href="/propiedades"
+							className="flex gap-2 bg-blue-300 hover:bg-blue-500 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
+						>
+							<ChevronLeft size={20} />
+							Volver
+						</Link>
+					</div>
 				</div>
 				<div className="flex items-center">
 					<div className="flex flex-col gap-2">
@@ -260,6 +306,22 @@ const InfoPropiedadPage = () => {
 					</div>
 				)}
 			</div>
+			<div className="flex flex-col gap-2 p-2">
+				{propiedad.tasaciones?.map((tasacion, index) => (
+					<TasacionInfo key={index} tasacion={tasacion} />
+				))}
+				<TasacionInfo tasacion={tasacion} />
+
+				<button
+					className="bg-green-500 hover:bg-green-600 transition-all text-white px-4 py-2 rounded-md"
+					onClick={() =>
+						window.location.replace(`/crearTasacion/${propiedad._id}`)
+					}
+				>
+					Agregar Tasación
+				</button>
+			</div>
+			<PosiblesInteresados clientes={clientesInteresados} />
 		</div>
 	);
 };
