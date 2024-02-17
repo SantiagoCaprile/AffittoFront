@@ -219,7 +219,7 @@ export default function CrearContratoPage() {
 			<div className="flex flex-col gap-2 w-1/2">
 				<SelectorClientes
 					setSeleccionados={setlocatario}
-					titulo="locatario"
+					titulo="Locatario"
 					maximo={1}
 				/>
 				<SelectorClientes

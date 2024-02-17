@@ -176,7 +176,7 @@ export default function CrearPropiedadPage() {
 								<option value="">Seleccione</option>
 								<option value="Capital Federal">Capital Federal</option>
 								<option value="Rosario">Rosario</option>
-								<option value="Santa Fe">Santa Fe</option>
+								<option value="Santa Fe de la Vera Cruz">Santa Fe</option>
 							</select>
 						</fieldset>
 						<fieldset className={styles.fieldset}>
