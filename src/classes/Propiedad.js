@@ -39,6 +39,19 @@ class Propiedad {
 		}
 	}
 
+	static async editarPropiedad(propiedadId, data) {
+		console.log(data);
+		fetch(`${this.URL}/${propiedadId}`, {
+			method: "PUT",
+			body: JSON.stringify(new Propiedad(data)),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		})
+			.then((res) => res.json())
+			.catch((error) => console.error("Error:", error));
+	}
+
 	static async fetchPropiedades() {
 		const listaPropiedades = await fetch(this.URL)
 			.then((response) => response.json())
