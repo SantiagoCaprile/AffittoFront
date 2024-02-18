@@ -7,6 +7,7 @@ import Link from "next/link";
 import Cliente from "@/classes/Cliente";
 import BusquedaInfo from "@/components/BusquedaInfo/page";
 import BusquedaNueva from "@/components/BusquedaNueva/page";
+import { useRouter } from "next/navigation";
 
 const busqueda = {
 	operacion: "Alquiler",
@@ -26,6 +27,7 @@ const busqueda = {
 };
 
 const InfoClientePage = () => {
+	const router = useRouter();
 	const [cliente, setCliente] = useState({});
 	const [busquedas, setBusquedas] = useState([]);
 	const [nuevaBusqueda, setNuevaBusqueda] = useState(false);
@@ -43,7 +45,12 @@ const InfoClientePage = () => {
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-[800px] w-2/3">
 				<div className="flex justify-between mb-4">
 					<h2 className="text-2xl font-bold mb-4">Información del Cliente</h2>
-					<button className="flex gap-2 bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md items-center justify-center">
+					<button
+						className="flex gap-2 bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
+						onClick={() => {
+							router.push(`/crearCliente/${cliente.cuit}`);
+						}}
+					>
 						<Pencil size={20} />
 						Actualizar Datos
 					</button>
