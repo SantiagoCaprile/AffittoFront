@@ -53,6 +53,25 @@ class Cliente {
 			.then((data) => data.data);
 		return response;
 	}
+
+	static async editarCliente(clienteId, data) {
+		const response = fetch(this.URL + `/${clienteId}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(
+				new Cliente({
+					...data,
+					nombre: data.nombre_razon_social,
+				})
+			),
+		})
+			.then((response) => response.json())
+			.then((data) => console.log(data))
+			.catch((error) => console.error("Error:", error));
+		return response;
+	}
 }
 
 export default Cliente;
