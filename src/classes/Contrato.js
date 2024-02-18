@@ -40,6 +40,32 @@ class Contrato {
 				setState({ loading: false, error: true });
 			});
 	}
+
+	static async buscarContrato(_id) {
+		console.log(_id);
+		const response = await fetch(
+			`http://localhost:3000/api/v1/contratos/${_id}`
+		)
+			.then((response) => response.json())
+			.then((data) => data.data);
+		return response;
+	}
+
+	static async editarContrato(_id, contrato) {
+		const response = await fetch(
+			`http://localhost:3000/api/v1/contratos/${_id}`,
+			{
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(contrato),
+			}
+		)
+			.then((response) => response.json())
+			.then((data) => data.data);
+		return response;
+	}
 }
 
 export default Contrato;
