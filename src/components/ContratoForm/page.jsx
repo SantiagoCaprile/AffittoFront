@@ -21,9 +21,9 @@ export default function ContratoForm({ contratoId = null }) {
 		error: false,
 		sent: false,
 	});
-
 	useEffect(() => {
 		setPropiedadId(window.location.pathname.split("/")[2]);
+
 		if (contratoId) {
 			Contrato.buscarContrato(contratoId).then((data) => {
 				setValue("destino", data.destino);
@@ -40,7 +40,6 @@ export default function ContratoForm({ contratoId = null }) {
 	}, [contratoId, setValue]);
 
 	const onSubmit = async (data) => {
-		console.log(propiedadId);
 		if (!contratoId && locatario.length !== 1) {
 			alert("Debe seleccionar un locatario");
 			return;
