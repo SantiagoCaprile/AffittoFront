@@ -102,7 +102,7 @@ const InfoPropiedadPage = () => {
 					<h2 className="text-2xl font-bold mb-4">Información de Propiedad</h2>
 					<div className="flex gap-2">
 						<Link
-							href={"/propiedades/editar"}
+							href={`/propiedades/${propiedad._id}/editar`}
 							className="flex gap-2 bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
 						>
 							<Pencil size={20} />

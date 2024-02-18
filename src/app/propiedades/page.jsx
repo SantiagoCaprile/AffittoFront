@@ -83,7 +83,7 @@ export default function PropiedadesPage() {
 					<div className="flex justify-between items-center">
 						<h1 className="text-2xl font-bold py-4">Propiedades</h1>
 						<div>
-							<Link href="/crearPropiedad">
+							<Link href="/propiedades/crearPropiedad">
 								<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
 									Nueva +
 								</button>
