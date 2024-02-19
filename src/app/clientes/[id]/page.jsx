@@ -5,26 +5,10 @@ import { Pencil, ChevronLeft, CalendarPlus, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Cliente from "@/classes/Cliente";
+import BusquedaInteligente from "@/classes/BusquedaIntelegente";
 import BusquedaInfo from "@/components/BusquedaInfo/page";
 import BusquedaNueva from "@/components/BusquedaNueva/page";
 import { useRouter } from "next/navigation";
-
-const busqueda = {
-	operacion: "Alquiler",
-	tipo: "Casa",
-	ambientes: 3,
-	dimension: {
-		min: 100,
-		max: 200,
-	},
-	precio: {
-		min: 1000,
-		max: 2000,
-	},
-	moneda: "USD",
-	localidad: "Cordoba",
-	clienteId: "123",
-};
 
 const InfoClientePage = () => {
 	const router = useRouter();
@@ -35,13 +19,23 @@ const InfoClientePage = () => {
 		const cuit = document.location.pathname.split("/")[2];
 		async function fetchData() {
 			const cliente = await Cliente.buscarCliente(cuit);
+			const busquedasDelCliente =
+				await BusquedaInteligente.obtenerBusquedasDelCliente(cliente._id);
+			setBusquedas(busquedasDelCliente);
 			setCliente(cliente);
 		}
 		fetchData();
 	}, []);
 
+	const updateBusquedas = async () => {
+		const busquedasDelCliente =
+			await BusquedaInteligente.obtenerBusquedasDelCliente(cliente._id);
+		setBusquedas(busquedasDelCliente);
+		setNuevaBusqueda(false);
+	};
+
 	return (
-		<div className="flex flex-col justify-center items-center bg-[#E8EFFF] p-4">
+		<div className="flex flex-1 flex-col justify-center items-center bg-[#E8EFFF] p-4">
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-[800px] w-2/3">
 				<div className="flex justify-between mb-4">
 					<h2 className="text-2xl font-bold mb-4">Información del Cliente</h2>
@@ -123,33 +117,57 @@ const InfoClientePage = () => {
 				<hr className="my-4" />
 				<table className="w-full mt-4">
 					<thead>
-						<tr>
+						<tr className="bg-gray-200">
+							<th>Tipo</th>
 							<th>Propiedad</th>
 							<th>Localidad</th>
-							<th>Operación</th>
 							<th>Estado</th>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td>Casa 3 dormitorios</td>
-							<td>Springfield</td>
-							<td>Alquiler</td>
-							<td>Disponible</td>
-						</tr>
-						<tr>
-							<td>Departamento 2 dormitorios</td>
-							<td>Shelbyville</td>
-							<td>Venta</td>
-							<td>Reservada</td>
-						</tr>
-					</tbody>
+					{
+						<tbody className="divide-y divide-gray-200">
+							{cliente.propiedades?.map((propiedad, index) => (
+								<tr
+									className="cursor-pointer hover:bg-gray-100 transition-all p-2 text-center"
+									key={index}
+									onDoubleClick={() =>
+										router.push(`/propiedades/${propiedad._id}`)
+									}
+								>
+									<td>{propiedad.tipo}</td>
+									<td>
+										{propiedad.domicilio.calle +
+											" " +
+											propiedad.domicilio.altura}
+									</td>
+									<td>{propiedad.domicilio.localidad}</td>
+									<td>{propiedad.estado}</td>
+								</tr>
+							))}
+							{cliente.propiedades?.length === 0 && (
+								<tr>
+									<td colSpan="4" className="text-center text-red-500">
+										No hay propiedades asociadas a este cliente
+									</td>
+								</tr>
+							)}
+						</tbody>
+					}
 				</table>
 			</div>
-			<div className="shadow-md rounded px-8 pb-8 mb-4 max-w-[800px] w-fit bg-white">
-				<h1 className="text-2xl font-bold pt-4">Busquedas Inteligentes</h1>
-				<BusquedaInfo busqueda={busqueda} />
-				<div className="flex justify-end">
+			<div className="shadow-md rounded px-8 pb-8 mb-4 max-w-[1000px] w-fit bg-white">
+				<h1 className="text-2xl font-bold pt-4 w-fit">
+					Busquedas Inteligentes
+				</h1>
+				{busquedas &&
+					busquedas.map((busqueda, index) => (
+						<BusquedaInfo key={index} busqueda={busqueda} />
+					))}
+				<div
+					className={
+						!nuevaBusqueda ? "flex justify-center " : "flex justify-end"
+					}
+				>
 					{!nuevaBusqueda && (
 						<button
 							onClick={() => setNuevaBusqueda(true)}
@@ -168,7 +186,12 @@ const InfoClientePage = () => {
 						</button>
 					)}
 				</div>
-				{nuevaBusqueda && <BusquedaNueva />}
+				{nuevaBusqueda && (
+					<BusquedaNueva
+						clienteId={cliente._id}
+						updateBusquedas={() => updateBusquedas()}
+					/>
+				)}
 			</div>
 		</div>
 	);
