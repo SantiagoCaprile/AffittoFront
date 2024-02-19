@@ -2,14 +2,13 @@
 import React from "react";
 import NextImage from "next/image";
 import { useState, useEffect } from "react";
-import { Pencil, ChevronLeft } from "lucide-react";
+import { Pencil, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Propiedad from "@/classes/Propiedad";
 import CargarPago from "@/components/CargarPago/page";
 import SelectorClientes from "@/components/SelectorClientes/page";
 import OperacionNueva from "@/components/OperacionNueva/page";
 import OperacionInfo from "@/components/OperacionInfo/page";
-import TasacionInfo from "@/components/TasacionInfo/page";
 import PosiblesInteresados from "@/components/PosiblesInteresados/page";
 import Map from "@/components/Map";
 
@@ -18,21 +17,6 @@ const images = [
 	"/images/house2.webp",
 	"/images/house3.webp",
 ];
-
-const tasacion = {
-	fecha_visita: "2021-10-12",
-	fecha_tasacion: "2021-10-12",
-	valor: 100000,
-	moneda: "USD",
-	observaciones: "El tasador dijo que estaba en buen estado",
-	motivo: "Conocer el valor",
-	id: "1",
-	inmueble_id: "1",
-	antiguedad: "10-20",
-	nombre_tasador: "Juan Perez",
-	matricula: "4444444",
-	solicitante_id: "1",
-};
 
 const clientesInteresados = [
 	{
@@ -60,11 +44,6 @@ const clientesInteresados = [
 		operacion: "Alquiler",
 	},
 ];
-
-//datos que debe tener
-//domicilio, localidad, tipo de propiedad, superficie, descripcion
-//precio, estado actual
-//boton de alquilar, boton de vender, boton de editar, boton de señar, boton de volver
 
 const InfoPropiedadPage = () => {
 	const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
@@ -154,65 +133,89 @@ const InfoPropiedadPage = () => {
 							</div>
 						</div>
 					</div>
-					<div className="flex flex-wrap justify-center items-end">
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Domicilio:</label>
-							<span>
-								{propiedad.domicilio?.calle ? propiedad.domicilio?.calle : ""}{" "}
-								{propiedad.domicilio?.altura ? propiedad.domicilio?.altura : ""}{" "}
-								{propiedad.domicilio?.piso ? propiedad.domicilio?.piso : ""}{" "}
-								{propiedad.domicilio?.dpto ? propiedad.domicilio?.dpto : ""}
-							</span>
+					<div className="flex flex-col justify-between">
+						<div className="grid grid-cols-2 gap-2 w-full">
+							<div>
+								<label className="block font-bold">Domicilio:</label>
+								<span>
+									{propiedad.domicilio?.calle ? propiedad.domicilio?.calle : ""}{" "}
+									{propiedad.domicilio?.altura
+										? propiedad.domicilio?.altura
+										: ""}{" "}
+									{propiedad.domicilio?.piso ? propiedad.domicilio?.piso : ""}{" "}
+									{propiedad.domicilio?.dpto ? propiedad.domicilio?.dpto : ""}
+								</span>
+							</div>
+							<div>
+								<label className="block font-bold">Localidad:</label>
+								<span>{propiedad.domicilio?.localidad}</span>
+							</div>
+							<div>
+								<label className="block font-bold">Tipo de Propiedad:</label>
+								<span>{propiedad.tipo}</span>
+							</div>
+							<div>
+								<label className="block font-bold">Superficie:</label>
+								<span>{propiedad.dimension} m2</span>
+							</div>
+							<div>
+								<label className="block font-bold">Operaciones:</label>
+								{operaciones?.filter((op) => op.tipo === "Venta").length}{" "}
+								Ventas,{" "}
+								{operaciones?.filter((op) => op.tipo === "Alquiler").length}{" "}
+								Alquileres
+							</div>
+							<div>
+								<label className="block font-bold">Estado:</label>
+								<span>{propiedad.estado}</span>
+							</div>
+							<div>
+								<label className="block font-bold">Descripción:</label>
+								<span>{propiedad.descripcion}</span>
+							</div>
 						</div>
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Localidad:</label>
-							<span>{propiedad.domicilio?.localidad}</span>
-						</div>
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Tipo de Propiedad:</label>
-							<span>{propiedad.tipo}</span>
-						</div>
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Superficie:</label>
-							<span>{propiedad.dimension} m2</span>
-						</div>
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Operaciones:</label>
-							{
-								operaciones?.filter((op) => op.tipo === "Venta").length
-							} Ventas,{" "}
-							{operaciones?.filter((op) => op.tipo === "Alquiler").length}{" "}
-							Alquileres
-						</div>
-						<div className="mb-2 w-1/2">
-							<label className="block font-bold">Estado:</label>
-							<span>{propiedad.estado}</span>
-						</div>
-						<div className="mb-2 w-full">
-							<label className="block font-bold">Descripción:</label>
-							<span>{propiedad.descripcion}</span>
-						</div>
-						<div className="flex gap-4 items-center pb-4">
+						<div className="grid grid-cols-2 gap-2 items-end pt-4">
 							<button
-								className="bg-orange-500 hover:bg-orange-600 transition-all text-white px-4 py-2 rounded-md"
+								className="bg-orange-500 hover:bg-orange-600 transition-all text-white px-4 py-2 rounded-md flex justify-center items-center gap-2"
 								onClick={() => setverOperaciones(!verOperaciones)}
 							>
-								{verOperaciones ? "Ocultar Operaciones" : "Ver Operaciones"}
+								Operaciones
+								{verOperaciones ? <EyeOff size={18} /> : <Eye size={18} />}
 							</button>
-							<button
-								disabled={propiedad.estado !== "Disponible"}
-								className={
-									styles.button +
-									(propiedad.estado !== "Disponible"
-										? styles.disabled
-										: "bg-green-500 hover:bg-green-600")
-								}
-								onClick={() =>
-									window.location.replace(`/crearContrato/${propiedad._id}`)
-								}
+							<Link
+								href={`/propiedades/${propiedad._id}/tasaciones`}
+								className="bg-lime-700 hover:bg-lime-900 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
 							>
-								Nuevo Contrato
-							</button>
+								<span>Tasaciones</span>
+								<ChevronRight size={18} />
+							</Link>
+							{propiedad.contratos?.length > 0 ? (
+								<Link
+									//fixear el redirect para ver todos los contratos
+									href={`/propiedades/${propiedad._id}/${propiedad.contratos[0]}`}
+									className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
+								>
+									<span>Contratos</span>
+									<ChevronRight size={18} />
+								</Link>
+							) : (
+								<button
+									disabled={propiedad.estado !== "Disponible"}
+									className={
+										styles.button +
+										(propiedad.estado !== "Disponible"
+											? styles.disabled
+											: "bg-green-500 hover:bg-green-600") +
+										" flex justify-center items-center gap-2"
+									}
+									onClick={() =>
+										window.location.replace(`/crearContrato/${propiedad._id}`)
+									}
+								>
+									Nuevo Contrato
+									<ChevronRight size={18} />
+								</button>
+							)}
 							<button className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md">
 								Vender
 							</button>
@@ -222,11 +225,13 @@ const InfoPropiedadPage = () => {
 									styles.button +
 									(propiedad.estado !== "Disponible"
 										? styles.disabled
-										: "bg-yellow-500 hover:bg-yellow-600")
+										: "bg-yellow-500 hover:bg-yellow-600") +
+									" flex justify-center items-center gap-2"
 								}
 								onClick={() => setAgregarPago(!agregarPago)}
 							>
-								Señar
+								Cargar Pago
+								{!agregarPago ? <Eye size={18} /> : <EyeOff size={18} />}
 							</button>
 						</div>
 					</div>
@@ -305,21 +310,6 @@ const InfoPropiedadPage = () => {
 						<h2 className="text-2xl font-bold text-white">Cargando Mapa...</h2>
 					</div>
 				)}
-			</div>
-			<div className="flex flex-col gap-2 p-2">
-				{propiedad.tasaciones?.map((tasacion, index) => (
-					<TasacionInfo key={index} tasacion={tasacion} />
-				))}
-				<TasacionInfo tasacion={tasacion} />
-
-				<button
-					className="bg-green-500 hover:bg-green-600 transition-all text-white px-4 py-2 rounded-md"
-					onClick={() =>
-						window.location.replace(`/crearTasacion/${propiedad._id}`)
-					}
-				>
-					Agregar Tasación
-				</button>
 			</div>
 			<PosiblesInteresados clientes={clientesInteresados} />
 		</div>
