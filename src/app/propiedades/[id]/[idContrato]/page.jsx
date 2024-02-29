@@ -4,41 +4,32 @@ import { useRouter } from "next/navigation";
 import Contrato from "@/classes/Contrato";
 import { fixedDate } from "@/app/utils/utils";
 import Link from "next/link";
-import {
-	Pencil,
-	ChevronLeft,
-	CheckSquare,
-	Ban,
-	XSquare,
-	DollarSign,
-} from "lucide-react";
+import { Pencil, ChevronLeft, CheckSquare, Ban, XSquare } from "lucide-react";
 import { mostrarMontoSeparado } from "@/app/utils/utils";
+import CargarPago from "@/components/CargarPago/page";
 
 export default function InfoContratoPage() {
 	const router = useRouter();
 	const [contrato, setContrato] = useState({});
+	const [saldo, setSaldo] = useState(0.0);
 
 	useEffect(() => {
 		const _id = document.location.pathname.split("/")[3];
 		async function fetchData() {
 			const contrato = await Contrato.buscarContrato(_id);
-			console.log(contrato);
 			setContrato(contrato);
+			setSaldo(
+				contrato.pagos.reduce((acc, pago) => acc + pago.monto, 0) -
+					contrato.comision_celebracion
+			);
 		}
 		fetchData();
-	}, []);
+	}, [saldo]);
 
 	const handleRescindir = () => {
 		if (confirm("¿Está seguro que desea rescindir el contrato?")) {
 			//Contrato.rescindir();
 			alert("Contrato rescindido");
-		}
-	};
-
-	const handlePagarCelebracion = () => {
-		if (confirm("¿Está seguro que desea pagar la comisión de celebración?")) {
-			//Contrato.pagarCelebracion();
-			alert("Comisión de celebración pagada");
 		}
 	};
 
@@ -60,11 +51,11 @@ export default function InfoContratoPage() {
 							Editar
 						</Link>
 						<Link
-							href={`/propiedades/${contrato.propiedad?._id}`}
+							href={`/propiedades/${contrato.propiedad?._id}/contratos`}
 							className="flex gap-2 bg-blue-300 hover:bg-blue-500 transition-all text-white px-4 py-2 rounded-md items-center justify-center"
 						>
 							<ChevronLeft size={20} />
-							Volver a Propiedad
+							Volver a Contratos
 						</Link>
 					</div>
 				</div>
@@ -189,7 +180,10 @@ export default function InfoContratoPage() {
 					</div>
 					<div className="mb-2">
 						<span className="font-bold">Comision Celebración: </span>
-						<span>{contrato.comision_celebracion}</span>
+						<span>
+							{contrato.comision_celebracion}
+							{contrato.moneda}
+						</span>
 					</div>
 					<div className="mb-2 grid">
 						<span className="font-bold">Fecha de Creación: </span>
@@ -206,6 +200,18 @@ export default function InfoContratoPage() {
 								" - " +
 								contrato.updatedAt.split("T")[1].split(".")[0]}
 						</span>
+					</div>
+					<div className="mb-2">
+						<span className="font-bold">Saldo: </span>
+						{saldo && saldo >= 0 ? (
+							<span className="text-green-500">
+								{mostrarMontoSeparado(saldo)} {contrato.moneda}
+							</span>
+						) : (
+							<span className="text-red-500">
+								{mostrarMontoSeparado(saldo)} {contrato.moneda}
+							</span>
+						)}
 					</div>
 				</div>
 				<div className="mb-2">
@@ -226,20 +232,12 @@ export default function InfoContratoPage() {
 						<Ban size={20} />
 						Rescindir
 					</button>
-					<button
-						disabled={contrato.estado !== "Vigente"}
-						onClick={handlePagarCelebracion}
-						className={
-							"flex gap-2 transition-all text-white px-4 py-2 rounded-md items-center justify-center" +
-							(contrato.estado !== "Vigente"
-								? styles.disabledBtn
-								: " bg-green-500 hover:bg-green-600")
-						}
-					>
-						<DollarSign size={20} />
-						Pagar Celebracion
-					</button>
 				</div>
+				<CargarPago
+					forzarUpdate={(montoPago) => {
+						setSaldo(saldo + montoPago);
+					}}
+				/>
 			</div>
 		</div>
 	);

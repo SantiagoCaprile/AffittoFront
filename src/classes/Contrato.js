@@ -66,6 +66,31 @@ class Contrato {
 			.then((data) => data.data);
 		return response;
 	}
+
+	static async pagarCelebracion(data, setEnvio) {
+		setEnvio({ loading: true });
+		const response = await fetch(
+			`http://localhost:3000/api/v1/pagos/pagoContrato`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data),
+			}
+		)
+			.then((response) => {
+				if (response.ok) {
+					setEnvio({ sent: true, loading: false, error: false });
+					return response.json();
+				} else throw new Error("Network response was not ok", response);
+			})
+			.catch((error) => {
+				console.error("Error:", error);
+				setEnvio({ loading: false, error: true });
+			});
+		return response;
+	}
 }
 
 export default Contrato;
