@@ -122,6 +122,7 @@ const InfoClientePage = () => {
 							<th>Propiedad</th>
 							<th>Localidad</th>
 							<th>Estado</th>
+							<th>Rol</th>
 						</tr>
 					</thead>
 					{
@@ -131,17 +132,18 @@ const InfoClientePage = () => {
 									className="cursor-pointer hover:bg-gray-100 transition-all p-2 text-center"
 									key={index}
 									onDoubleClick={() =>
-										router.push(`/propiedades/${propiedad._id}`)
+										router.push(`/propiedades/${propiedad.id._id}`)
 									}
 								>
-									<td>{propiedad.tipo}</td>
+									<td>{propiedad.id.tipo}</td>
 									<td>
-										{propiedad.domicilio.calle +
+										{propiedad.id.domicilio.calle +
 											" " +
-											propiedad.domicilio.altura}
+											propiedad.id.domicilio.altura}
 									</td>
-									<td>{propiedad.domicilio.localidad}</td>
-									<td>{propiedad.estado}</td>
+									<td>{propiedad.id.domicilio.localidad}</td>
+									<td>{propiedad.id.estado}</td>
+									<td>{propiedad.rol}</td>
 								</tr>
 							))}
 							{cliente.propiedades?.length === 0 && (
