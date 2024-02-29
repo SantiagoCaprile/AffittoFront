@@ -9,6 +9,6 @@ export function mostrarMontoSeparado(monto) {
 	const [parteEntera, parteDecimal] = montoString.split(".");
 	const parteEnteraSeparada = parteEntera.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 	return parteDecimal
-		? `${parteEnteraSeparada},${parteDecimal}`
+		? `${parteEnteraSeparada},${parteDecimal.slice(0, 2)}`
 		: parteEnteraSeparada;
 }
