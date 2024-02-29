@@ -72,7 +72,7 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 	};
 
 	return (
-		<div className="flex flex-col bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+		<div className="flex flex-col bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 min-w-[650px] w-fit">
 			<h2 className="text-2xl text-black font-bold mb-4">{titulo}</h2>
 			{mostrarError && (
 				<p className="text-red-500">
@@ -98,7 +98,7 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 				<tbody>
 					{getSelectedClientes().map((cliente) => (
 						<tr
-							key={cliente.cuit}
+							key={cliente.id}
 							onClick={() => handleClienteClick(cliente)}
 							className={styles.selected}
 						>
@@ -109,10 +109,10 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 						</tr>
 					))}
 					{filteredClientes.length !== 0 ? (
-						filteredClientes.slice(0, 7).map((cliente) =>
+						filteredClientes.slice(0, 7).map((cliente, index) =>
 							cliente.selected ? null : (
 								<tr
-									key={cliente.id}
+									key={index}
 									onClick={() => handleClienteClick(cliente)}
 									className={`${styles.tr} ${
 										cliente.selected ? styles.selected : ""
@@ -139,10 +139,10 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 const styles = {
 	inputs: "border-b-4 border-blue-500 bg-slate-200 rounded py-2 px-4",
 	selected: "bg-blue-500 text-white hover:bg-blue-300",
-	table: "text-m text-left text-gray-500 dark:text-gray-400",
+	table: "text-left text-gray-500 dark:text-gray-400",
 	thead:
-		"text-m text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400",
-	th: "py-3 px-5 uppercase",
+		"text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400",
+	th: "py-3 uppercase",
 	tr: "hover:bg-gray-100",
 	selected: "bg-blue-500 text-white",
 };
