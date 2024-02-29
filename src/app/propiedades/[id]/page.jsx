@@ -4,12 +4,13 @@ import NextImage from "next/image";
 import { useState, useEffect } from "react";
 import { Pencil, ChevronLeft, ChevronRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Propiedad from "@/classes/Propiedad";
-import CargarPago from "@/components/CargarPago/page";
-import SelectorClientes from "@/components/SelectorClientes/page";
+import CargarSenia from "@/components/CargarSenia/page";
 import OperacionNueva from "@/components/OperacionNueva/page";
 import OperacionInfo from "@/components/OperacionInfo/page";
 import PosiblesInteresados from "@/components/PosiblesInteresados/page";
+import SeniaInfo from "@/components/SeniaInfo/page";
 import Map from "@/components/Map";
 
 const images = [
@@ -46,12 +47,14 @@ const clientesInteresados = [
 ];
 
 const InfoPropiedadPage = () => {
+	const router = useRouter();
 	const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
 	const [propiedad, setPropiedad] = useState({});
-	const [agregarPago, setAgregarPago] = useState(false);
+	const [agregarSenia, setAgregarSenia] = useState(false);
 	const [verOperaciones, setverOperaciones] = useState(false);
 	const [operacionSeleccionada, setOperacionSeleccionada] = useState(null);
 	const [operaciones, setOperaciones] = useState([]);
+	const [update, setUpdate] = useState(false);
 
 	useEffect(() => {
 		const _id = document.location.pathname.split("/")[2];
@@ -62,7 +65,8 @@ const InfoPropiedadPage = () => {
 			console.log(propiedad);
 		}
 		fetchData();
-	}, []);
+		setUpdate(false);
+	}, [update]);
 
 	const handleImageClick = (index) => {
 		setImagenSeleccionada(index);
@@ -75,7 +79,7 @@ const InfoPropiedadPage = () => {
 	};
 
 	return (
-		<div className="flex flex-1 flex-col justify-center items-center bg-[#E8EFFF] p-4">
+		<div className="flex flex-1 flex-col justify-center items-center bg-[#E8EFFF] p-4 min-w-fit">
 			<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-3/4">
 				<div className="flex justify-between mb-4">
 					<h2 className="text-2xl font-bold mb-4">Información de Propiedad</h2>
@@ -182,43 +186,6 @@ const InfoPropiedadPage = () => {
 								Operaciones
 								{verOperaciones ? <EyeOff size={18} /> : <Eye size={18} />}
 							</button>
-							<Link
-								href={`/propiedades/${propiedad._id}/tasaciones`}
-								className="bg-lime-700 hover:bg-lime-900 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
-							>
-								<span>Tasaciones</span>
-								<ChevronRight size={18} />
-							</Link>
-							{propiedad.contratos?.length > 0 ? (
-								<Link
-									//fixear el redirect para ver todos los contratos
-									href={`/propiedades/${propiedad._id}/${propiedad.contratos[0]}`}
-									className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
-								>
-									<span>Contratos</span>
-									<ChevronRight size={18} />
-								</Link>
-							) : (
-								<button
-									disabled={propiedad.estado !== "Disponible"}
-									className={
-										styles.button +
-										(propiedad.estado !== "Disponible"
-											? styles.disabled
-											: "bg-green-500 hover:bg-green-600") +
-										" flex justify-center items-center gap-2"
-									}
-									onClick={() =>
-										window.location.replace(`/crearContrato/${propiedad._id}`)
-									}
-								>
-									Nuevo Contrato
-									<ChevronRight size={18} />
-								</button>
-							)}
-							<button className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md">
-								Vender
-							</button>
 							<button
 								disabled={propiedad.estado !== "Disponible"}
 								className={
@@ -228,11 +195,44 @@ const InfoPropiedadPage = () => {
 										: "bg-yellow-500 hover:bg-yellow-600") +
 									" flex justify-center items-center gap-2"
 								}
-								onClick={() => setAgregarPago(!agregarPago)}
+								onClick={() => setAgregarSenia(!agregarSenia)}
 							>
-								Cargar Pago
-								{!agregarPago ? <Eye size={18} /> : <EyeOff size={18} />}
+								{propiedad.estado !== "Reservada"
+									? "Cargar Seña"
+									: "Seña Cargada"}
+								{!agregarSenia ? <Eye size={18} /> : <EyeOff size={18} />}
 							</button>
+							<Link
+								href={`/propiedades/${propiedad._id}/contratos`}
+								className=" bg-fuchsia-500 hover:bg-fuchsia-600 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
+							>
+								<span>Contratos</span>
+								<ChevronRight size={18} />
+							</Link>
+							<button
+								disabled={propiedad.estado === "Alquilada"}
+								className={
+									styles.button +
+									(propiedad.estado === "Alquilada"
+										? styles.disabled
+										: "bg-green-500 hover:bg-green-600") +
+									" flex justify-center items-center gap-2"
+								}
+								onClick={() => router.push(`/crearContrato/${propiedad._id}`)}
+							>
+								Nuevo Contrato
+								<ChevronRight size={18} />
+							</button>
+							<button className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md">
+								Vender
+							</button>
+							<Link
+								href={`/propiedades/${propiedad._id}/tasaciones`}
+								className="bg-lime-700 hover:bg-lime-900 transition-all text-white px-4 py-2 rounded-md text-center flex justify-center items-center gap-2"
+							>
+								<span>Tasaciones</span>
+								<ChevronRight size={18} />
+							</Link>
 						</div>
 					</div>
 				</div>
@@ -276,11 +276,8 @@ const InfoPropiedadPage = () => {
 					</div>
 				</div>
 			)}
-			{agregarPago && (
-				<div className={`flex flex-1 px-8 pt-6 pb-8 mb-4 gap-2`}>
-					<SelectorClientes />
-					<CargarPago />
-				</div>
+			{agregarSenia && (
+				<CargarSenia propiedadId={propiedad._id} update={setUpdate} />
 			)}
 			<div className="w-2/3 h-[400px] bg-black">
 				{propiedad.ubicacion?.lat ? (
@@ -311,6 +308,17 @@ const InfoPropiedadPage = () => {
 					</div>
 				)}
 			</div>
+			{propiedad.senias && propiedad.senias.length > 0 && (
+				<div className="grid grid-cols-2 w-4/5 pt-4 gap-4 place-items-center">
+					{propiedad.senias
+						.sort((a, b) => {
+							return new Date(b.fecha) - new Date(a.fecha);
+						})
+						.map((senia, index) => (
+							<SeniaInfo key={index} senia={senia} />
+						))}
+				</div>
+			)}
 			<PosiblesInteresados clientes={clientesInteresados} />
 		</div>
 	);
