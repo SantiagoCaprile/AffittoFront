@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { AreaChartIcon, UserCog } from "lucide-react";
 
 export const metadata = {
 	title: "Affitto",
@@ -18,9 +18,16 @@ export default async function Page() {
 					</div>
 					<div>
 						<form className="flex justify-evenly items-center p-3 text-base  rounded-t-md from-transparent to-blue-900 bg-gradient-to-b">
-							<Link href="/propiedades">
+							<Link href="/gestionUsuarios">
 								<button className="flex gap-1 items-center bg-blue-900 text-white border-2 border-blue-500 px-16 py-2 rounded-full text-xl hover:bg-blue-700 transition-all active:translate-y-1">
-									Propiedades
+									<UserCog size="24" />
+									<span>Administrar</span>
+								</button>
+							</Link>
+							<Link href="/reportes">
+								<button className="flex gap-1 items-center bg-blue-900 text-white border-2 border-blue-500 px-16 py-2 rounded-full text-xl hover:bg-blue-700 transition-all active:translate-y-1">
+									<AreaChartIcon size="24" />
+									<span>Reportes</span>
 								</button>
 							</Link>
 						</form>
