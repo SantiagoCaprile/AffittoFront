@@ -91,8 +91,9 @@ const GestionUsuariosPage = () => {
 									<td>{user.nombre ?? "@example.com"}</td>
 									<td className="flex gap-1">
 										<select
-											defaultValue={user.rol ?? ""}
-											disabled={rol.loading}
+											disabled={
+												rol.loading || (rol.confirm && rol.index != index)
+											}
 											onChange={(e) => {
 												setRol({
 													confirm: true,

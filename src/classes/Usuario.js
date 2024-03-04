@@ -66,11 +66,7 @@ class Usuario {
 			},
 			body: JSON.stringify({ rol: role }),
 		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-				return true;
-			})
+			.then(() => true)
 			.catch((error) => {
 				console.error("Error updating role:", error);
 				alert("Error al actualizar rol");
