@@ -1,10 +1,9 @@
 import Image from "next/image";
-import Link from "next/link";
 import userImage from "../../../public/images/user.jpg";
-import { Pencil } from "lucide-react";
 import { options } from "../api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
+import { CambiarPass } from "@/components/CambiarPass/page";
 
 export default async function UserProfile() {
 	const session = await getServerSession(options).then((session) => {
@@ -32,33 +31,18 @@ export default async function UserProfile() {
 					</div>
 				</div>
 				<div className="w-full md:w-1/2 mb-6 md:pl-6 flex flex-col">
-					<h1 className="text-4xl mb-2">{session.user.name}</h1>
+					<h1 className="text-4xl mb-2">
+						{session.user.name.replace(".", " ")}
+					</h1>
 					<div className="mb-4 flex flex-col h-1/2 justify-evenly">
 						<p className="text-gray-700">
-							Email: <span className="text-blue-500">ejemplo@affitto.com</span>
+							Email: <span className="text-blue-500">{session.user.email}</span>
 						</p>
 						<p className="text-gray-700">
-							Cargo: <span className="text-blue-500">Administrador</span>
+							Cargo: <span className="text-blue-500">{session.user.role}</span>
 						</p>
 					</div>
-					<Link
-						href="/personalform"
-						className="bg-blue-500 hover:bg-blue-600 transition-all text-white px-4 py-2 rounded-md w-2/3 flex gap-1 items-center justify-center"
-					>
-						Cambiar mis datos personales
-						<Pencil size={20} />
-					</Link>
-				</div>
-			</div>
-			<div className="my-5">
-				<div className="border-t border-black pt-2 items-center">
-					<h2 className="text-lg font-semibold mb-4">Mas Info</h2>
-					<p className="text-gray-700">
-						Lorem ipsum dolor, sit amet consectetur adipisicing elit. Facere
-						voluptatibus placeat blanditiis asperiores doloremque nemo tenetur
-						ea quod? Non iste ut unde optio omnis, nam tenetur vero adipisci.
-						Similique, earum?
-					</p>
+					<CambiarPass user={session.user} />
 				</div>
 			</div>
 		</div>
