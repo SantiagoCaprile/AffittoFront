@@ -1,5 +1,11 @@
 class Usuario {
 	static URL = "http://localhost:3000/usuarios";
+	static USUARIO_ROLES = {
+		ADMIN: "Administrador",
+		EMPLEADO: "Empleado",
+		JEFE: "Jefe",
+		AUDITOR: "Auditor",
+	};
 	constructor(nombre, apellido, email, password) {
 		this.nombre = nombre;
 		this.apellido = apellido;
@@ -50,6 +56,27 @@ class Usuario {
 			console.log(err);
 		});
 		return await response.json();
+	}
+
+	static async updateRole(email, role) {
+		const res = await fetch(`${this.URL}/${email}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ rol: role }),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+				return true;
+			})
+			.catch((error) => {
+				console.error("Error updating role:", error);
+				alert("Error al actualizar rol");
+				return false;
+			});
+		return res;
 	}
 }
 

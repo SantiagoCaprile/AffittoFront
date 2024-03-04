@@ -1,11 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Usuario from "@/classes/usuario";
+import { Check, Trash2 } from "lucide-react";
+import Usuario from "@/classes/Usuario";
 
 const GestionUsuariosPage = () => {
 	const [users, setUsers] = useState([]);
 	const [filteredUsers, setFilteredUsers] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [rol, setRol] = useState({
+		loading: false,
+		confirm: "",
+		index: 0,
+		rolSelected: "",
+	});
 
 	const filterUsers = () => {
 		const filtered = users.filter((user) =>
@@ -20,6 +27,25 @@ const GestionUsuariosPage = () => {
 			setFilteredUsers(data);
 		});
 	}, []);
+
+	const handleUpdateRol = async (user, index) => {
+		setRol({ ...rol, loading: true });
+		await Usuario.updateRole(user.nombre, rol.rolSelected).then((res) => {
+			if (res) {
+				setRol({ ...rol, confirm: false });
+				setFilteredUsers((prev) => {
+					const updated = [...prev];
+					updated[index].rol = rol.rolSelected;
+					return updated;
+				});
+				setUsers((prev) => {
+					const updated = [...prev];
+					updated[index].rol = rol.rolSelected;
+					return updated;
+				});
+			}
+		});
+	};
 
 	return (
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF]">
@@ -55,15 +81,61 @@ const GestionUsuariosPage = () => {
 						<tr>
 							<th className={styles.th}>Email</th>
 							<th className={styles.th}>Rol</th>
-							<th className={styles.th}>Actions</th>
+							<th className={styles.th}>Acciones</th>
 						</tr>
 					</thead>
 					<tbody>
 						{filteredUsers ? (
-							filteredUsers.map((user) => (
+							filteredUsers.map((user, index) => (
 								<tr key={user._id} className={styles.tr}>
 									<td>{user.nombre ?? "@example.com"}</td>
-									<td>{user.rol ?? "No asignado"}</td>
+									<td className="flex gap-1">
+										<select
+											defaultValue={user.rol ?? ""}
+											disabled={rol.loading}
+											onChange={(e) => {
+												setRol({
+													confirm: true,
+													index: index,
+													loading: false,
+													rolSelected: e.target.value,
+												});
+											}}
+											value={
+												rol.confirm && rol.index == index
+													? rol.rolSelected
+													: user.rol
+											}
+											className={
+												styles.inputs + " " + (!user.rol && "text-red-500")
+											}
+										>
+											{Object.values(Usuario.USUARIO_ROLES).map((rol) => (
+												<option key={rol} value={rol}>
+													{rol}
+												</option>
+											))}
+											<option value="">No asignado</option>
+										</select>
+										{rol.confirm && rol.index == index && (
+											<>
+												<button
+													onClick={() => handleUpdateRol(user, index)}
+													className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+												>
+													<Check />
+												</button>
+												<button
+													onClick={() => {
+														setRol({ ...rol, confirm: false, loading: false });
+													}}
+													className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+												>
+													<Trash2 />
+												</button>
+											</>
+										)}
+									</td>
 									<td>
 										<button
 											onClick={() => Usuario.resetPassword(user._id)}
