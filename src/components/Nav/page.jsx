@@ -33,7 +33,7 @@ export default function Nav() {
 					{session ? (
 						<Link href="/profile" className="flex gap-2">
 							<User />
-							<span>{session.user.name || "Autorizado"}</span>
+							<span>{session.user.name.toUpperCase() || "Autorizado"}</span>
 						</Link>
 					) : (
 						<Link href="/login" className="flex gap-2">

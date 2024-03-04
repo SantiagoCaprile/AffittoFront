@@ -20,16 +20,15 @@ export const options = {
 			async authorize(credentials) {
 				// Call the API to verify the credentials and get the user object
 				try {
-					const user = await Usuario.verifyCredentials(credentials);
-					if (user.user || user.valid) {
-						console.log(user);
+					const data = await Usuario.verifyCredentials(credentials);
+					if (data.valid) {
+						console.log("user data", data);
 						// Return an object with the user's name, email, and role
 						return {
-							...user,
-							id: user.id ?? "1234",
-							name: user.user,
-							email: credentials.email,
-							role: user.role ?? "user",
+							...data.user,
+							name: data.user.nombre.split("@")[0],
+							email: data.user.nombre,
+							role: data.user.rol ?? "no role",
 						};
 					} else {
 						return null;
@@ -51,7 +50,10 @@ export const options = {
 			return token;
 		},
 		async session({ session, token }) {
-			if (session?.user) session.user.role = token.role;
+			if (session?.user) {
+				session.user.role = token.role;
+				session.user.name = token.name;
+			}
 			return session;
 		},
 	},
