@@ -116,7 +116,9 @@ const GestionUsuariosPage = () => {
 													{rol}
 												</option>
 											))}
-											<option value="">No asignado</option>
+											<option value="" disabled>
+												No asignado
+											</option>
 										</select>
 										{rol.confirm && rol.index == index && (
 											<>
