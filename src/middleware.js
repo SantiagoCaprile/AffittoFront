@@ -2,21 +2,32 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+const USUARIO_ROLES = {
+	ADMIN: "Administrador",
+	EMPLEADO: "Empleado",
+	JEFE: "Jefe",
+	AUDITOR: "Auditor",
+};
+
 export default withAuth(
 	function middleware(req) {
-		// if (
-		//   req.nextUrl.pathname.startsWith("/createUser") &&
-		//   req.nextauth.token.role !== "admin"
-		// ) {
-		//   console.log("no es admin, no puede crear users");
-		//   return NextResponse.rewrite(new URL("/denied", req.url));
-		// }
 		if (
-			req.nextUrl.pathname.startsWith("/propiedades") &&
-			!req.nextauth.token.role.includes("user")
+			req.nextUrl.pathname.startsWith("/gestionUsuarios") &&
+			req.nextauth.token.role !== USUARIO_ROLES.ADMIN
 		) {
-			console.log("no es user");
-			return NextResponse.rewrite(new URL("/api/auth/signin", req.url));
+			return NextResponse.rewrite(
+				new URL("/api/auth/signin", req.nextUrl.origin)
+			);
+		}
+		if (
+			req.nextUrl.pathname.startsWith("/reportes") &&
+			![USUARIO_ROLES.JEFE, USUARIO_ROLES.ADMIN].includes(
+				req.nextauth.token.role
+			)
+		) {
+			return NextResponse.rewrite(
+				new URL("/api/auth/signin", req.nextUrl.origin)
+			);
 		}
 	},
 	{
@@ -31,5 +42,5 @@ export default withAuth(
 
 // Applies next-auth only to matching routes - can be regex
 export const config = {
-	matcher: ["/propiedades", "/clientes"],
+	matcher: ["/propiedades", "/clientes", "/gestionUsuarios", "/reportes"],
 };
