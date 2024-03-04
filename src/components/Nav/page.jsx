@@ -28,7 +28,7 @@ export default function Nav() {
 					</Link>
 				</div>
 			</div>
-			<ul className="flex justify-around border-l-2 w-1/3">
+			<ul className="flex justify-end border-l-2 gap-4 px-6">
 				<li className="text-white font-bold hover:underline">
 					{session ? (
 						<Link href="/profile" className="flex gap-2">
@@ -47,16 +47,11 @@ export default function Nav() {
 					)}
 				</li>
 				<li className="text-white font-bold hover:underline">
-					{session ? (
+					{session && (
 						<button onClick={handleLogout} className="flex gap-2 items-center">
 							<LogOut height={18} />
 							<span>Cerrar Sesión</span>
 						</button>
-					) : (
-						<Link href="/register" className="flex gap-1">
-							<UserPlus />
-							<span>Registrarse</span>
-						</Link>
 					)}
 				</li>
 			</ul>
