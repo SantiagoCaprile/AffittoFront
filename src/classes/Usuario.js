@@ -24,7 +24,7 @@ class Usuario {
 	}
 
 	static async resetPassword(userId) {
-		fetch(`${this.URL}/resetPassword`, {
+		fetch(`${this.URL}/restart`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -33,7 +33,10 @@ class Usuario {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
+				if (data.error) {
+					alert(data.error);
+					return;
+				}
 				alert("Contraseña reiniciada");
 			})
 			.catch((error) => {
@@ -70,6 +73,30 @@ class Usuario {
 			.catch((error) => {
 				console.error("Error updating role:", error);
 				alert("Error al actualizar rol");
+				return false;
+			});
+		return res;
+	}
+
+	static async changeUserEstadoA(email, activo) {
+		const res = await fetch(`${this.URL}/${email}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ activo: activo }),
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.error) {
+					alert(data.error);
+					return false;
+				}
+				return true;
+			})
+			.catch((error) => {
+				console.error("Error updating user:", error);
+				alert("Error al actualizar usuario");
 				return false;
 			});
 		return res;

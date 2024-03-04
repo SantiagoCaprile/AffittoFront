@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Check, Trash2 } from "lucide-react";
+import { Check, Trash2, UserX, KeyRound, UserPlus } from "lucide-react";
 import Usuario from "@/classes/Usuario";
+import { useSession } from "next-auth/react";
 
 const GestionUsuariosPage = () => {
 	const [users, setUsers] = useState([]);
@@ -13,6 +14,7 @@ const GestionUsuariosPage = () => {
 		index: 0,
 		rolSelected: "",
 	});
+	const { data: session } = useSession();
 
 	const filterUsers = () => {
 		const filtered = users.filter((user) =>
@@ -43,6 +45,21 @@ const GestionUsuariosPage = () => {
 					updated[index].rol = rol.rolSelected;
 					return updated;
 				});
+			}
+		});
+	};
+
+	const handleChangeUserEstado = async (user, index) => {
+		await Usuario.changeUserEstadoA(user.nombre, !user.activo).then((res) => {
+			if (res) {
+				setFilteredUsers((prev) => {
+					const updated = [...prev];
+					updated[index].activo = !user.activo;
+					return updated;
+				});
+				const updatedUsers = [...users];
+				updatedUsers[index].activo = !user.activo;
+				setUsers(updatedUsers);
 			}
 		});
 	};
@@ -87,65 +104,123 @@ const GestionUsuariosPage = () => {
 					<tbody>
 						{filteredUsers ? (
 							filteredUsers.map((user, index) => (
-								<tr key={user._id} className={styles.tr}>
+								<tr
+									key={user._id}
+									className={
+										styles.tr +
+										(!user.activo && " bg-red-100") +
+										(user.nombre === session?.user?.email && " bg-blue-100")
+									}
+								>
 									<td>{user.nombre ?? "@example.com"}</td>
-									<td className="flex gap-1">
-										<select
-											disabled={
-												rol.loading || (rol.confirm && rol.index != index)
-											}
-											onChange={(e) => {
-												setRol({
-													confirm: true,
-													index: index,
-													loading: false,
-													rolSelected: e.target.value,
-												});
-											}}
-											value={
-												rol.confirm && rol.index == index
-													? rol.rolSelected
-													: user.rol
-											}
-											className={
-												styles.inputs + " " + (!user.rol && "text-red-500")
-											}
-										>
-											{Object.values(Usuario.USUARIO_ROLES).map((rol) => (
-												<option key={rol} value={rol}>
-													{rol}
-												</option>
-											))}
-											<option value="" disabled>
-												No asignado
-											</option>
-										</select>
-										{rol.confirm && rol.index == index && (
-											<>
-												<button
-													onClick={() => handleUpdateRol(user, index)}
-													className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-												>
-													<Check />
-												</button>
-												<button
-													onClick={() => {
-														setRol({ ...rol, confirm: false, loading: false });
-													}}
-													className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-												>
-													<Trash2 />
-												</button>
-											</>
-										)}
-									</td>
 									<td>
+										<div className="flex gap-1">
+											<select
+												disabled={
+													rol.loading ||
+													(rol.confirm && rol.index != index) ||
+													!user.activo ||
+													user.nombre === session?.user?.email
+												}
+												onChange={(e) => {
+													setRol({
+														confirm: true,
+														index: index,
+														loading: false,
+														rolSelected: e.target.value,
+													});
+												}}
+												value={
+													rol.confirm && rol.index == index
+														? rol.rolSelected
+														: user.rol
+												}
+												className={
+													styles.inputs + " " + (!user.rol && "text-red-500")
+												}
+											>
+												{Object.values(Usuario.USUARIO_ROLES).map((rol) => (
+													<option key={rol} value={rol}>
+														{rol}
+													</option>
+												))}
+												<option value="" disabled>
+													No asignado
+												</option>
+											</select>
+											{rol.confirm && rol.index == index ? (
+												<>
+													<button
+														onClick={() => handleUpdateRol(user, index)}
+														className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+													>
+														<Check />
+													</button>
+													<button
+														onClick={() => {
+															setRol({
+																...rol,
+																confirm: false,
+																loading: false,
+															});
+														}}
+														className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+													>
+														<Trash2 />
+													</button>
+												</>
+											) : (
+												<div className="w-[120px]"></div>
+											)}
+										</div>
+									</td>
+									<td className="flex flex-1 gap-1 w-3/4">
 										<button
-											onClick={() => Usuario.resetPassword(user._id)}
-											className="bg-blue-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+											disabled={
+												!user.activo || user.nombre === session?.user?.email
+											}
+											onClick={() => {
+												Usuario.resetPassword(user._id);
+											}}
+											className={
+												"text-white font-bold py-2 px-4 rounded flex " +
+												(!user.activo || user.nombre === session?.user?.email
+													? " bg-slate-400 cursor-not-allowed"
+													: " bg-blue-500 hover:bg-red-600")
+											}
 										>
-											Resetear contraseña
+											Resetear
+											<KeyRound />
 										</button>
+										{user.activo ? (
+											<button
+												disabled={user.nombre === session?.user?.email}
+												onClick={() => handleChangeUserEstado(user, index)}
+												className={
+													"text-white font-bold py-2 px-4 rounded flex flex-1" +
+													(user.nombre === session?.user?.email
+														? " bg-slate-400 cursor-not-allowed"
+														: " bg-red-500 hover:bg-red-600")
+												}
+											>
+												Desactivar
+												<UserX />
+											</button>
+										) : (
+											<button
+												disabled={user.nombre === session?.user?.email}
+												onClick={() => handleChangeUserEstado(user, index)}
+												className={
+													"text-white font-bold py-2 px-4 rounded flex flex-1" +
+													(user.nombre === session?.user?.email
+														? " bg-slate-400 cursor-not-allowed"
+														: " bg-green-500 hover:bg-green-600")
+												}
+											>
+												Activar
+												<UserPlus />
+											</button>
+										)}
 									</td>
 								</tr>
 							))
@@ -168,7 +243,7 @@ const styles = {
 	thead:
 		"text-m text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400",
 	th: "py-3 px-5 uppercase",
-	tr: "hover:bg-gray-100",
+	tr: "hover:bg-gray-100 ",
 	selected: "bg-blue-500 text-white",
 };
 
