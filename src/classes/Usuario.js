@@ -6,11 +6,23 @@ class Usuario {
 		JEFE: "Jefe",
 		AUDITOR: "Auditor",
 	};
-	constructor(nombre, apellido, email, password) {
+	constructor({ nombre, rol, password = "" }) {
 		this.nombre = nombre;
-		this.apellido = apellido;
-		this.email = email;
+		this.rol = rol;
 		this.password = password;
+	}
+
+	static async createUser(user) {
+		const response = await fetch(this.URL + "/nuevo", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(new Usuario(user)),
+		}).catch((err) => {
+			console.log(err);
+		});
+		return await response.json();
 	}
 
 	static async fetchUsers() {
@@ -37,7 +49,7 @@ class Usuario {
 					alert(data.error);
 					return;
 				}
-				alert("Contraseña reiniciada");
+				alert("Contraseña reiniciada a 1234");
 			})
 			.catch((error) => {
 				console.error("Error resetting password:", error);
@@ -85,6 +97,32 @@ class Usuario {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ activo: activo }),
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.error) {
+					alert(data.error);
+					return false;
+				}
+				return true;
+			})
+			.catch((error) => {
+				console.error("Error updating user:", error);
+				alert("Error al actualizar usuario");
+				return false;
+			});
+		return res;
+	}
+
+	static async changePassword(email, password) {
+		const res = await fetch(`${this.URL}/${email}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				password: password,
+			}),
 		})
 			.then((res) => res.json())
 			.then((data) => {

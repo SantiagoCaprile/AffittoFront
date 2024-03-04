@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Check, Trash2, UserX, KeyRound, UserPlus } from "lucide-react";
 import Usuario from "@/classes/Usuario";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 const GestionUsuariosPage = () => {
 	const [users, setUsers] = useState([]);
@@ -68,7 +69,7 @@ const GestionUsuariosPage = () => {
 		<div className="flex flex-1 justify-center items-center bg-[#E8EFFF]">
 			<div className="flex flex-col justify-center shadow-md rounded px-8 py-8 mb-4 max-w-[1200px] w-4/5 bg-white">
 				<h1 className="text-2xl font-bold">Administración de usuarios</h1>
-				<div className="flex flex-1 gap-2 py-2">
+				<div className="flex gap-2 py-2">
 					<input
 						type="text"
 						placeholder="Buscar por email"
@@ -92,6 +93,14 @@ const GestionUsuariosPage = () => {
 					>
 						Limpiar
 					</button>
+					<div className="flex flex-1 justify-end gap-2">
+						<Link href="/gestionUsuarios/nuevo">
+							<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex">
+								Nuevo usuario
+								<UserPlus />
+							</button>
+						</Link>
+					</div>
 				</div>
 				<table className={styles.table}>
 					<thead className={styles.thead}>
