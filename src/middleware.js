@@ -29,6 +29,18 @@ export default withAuth(
 				new URL("/api/auth/signin", req.nextUrl.origin)
 			);
 		}
+		if (
+			req.nextUrl.pathname.startsWith("/auditoria") &&
+			![
+				USUARIO_ROLES.AUDITOR,
+				USUARIO_ROLES.ADMIN,
+				USUARIO_ROLES.JEFE,
+			].includes(req.nextauth.token.role)
+		) {
+			return NextResponse.rewrite(
+				new URL("/api/auth/signin", req.nextUrl.origin)
+			);
+		}
 	},
 	{
 		callbacks: {
@@ -42,5 +54,11 @@ export default withAuth(
 
 // Applies next-auth only to matching routes - can be regex
 export const config = {
-	matcher: ["/propiedades", "/clientes", "/gestionUsuarios", "/reportes"],
+	matcher: [
+		"/propiedades",
+		"/clientes",
+		"/gestionUsuarios",
+		"/reportes",
+		"/auditoria",
+	],
 };
