@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { AreaChartIcon, UserCog } from "lucide-react";
+import { AreaChartIcon, UserCog, FileClock } from "lucide-react";
 
 export const metadata = {
 	title: "Affitto",
@@ -28,6 +28,12 @@ export default async function Page() {
 								<button className="flex gap-1 items-center bg-blue-900 text-white border-2 border-blue-500 px-16 py-2 rounded-full text-xl hover:bg-blue-700 transition-all active:translate-y-1">
 									<AreaChartIcon size="24" />
 									<span>Reportes</span>
+								</button>
+							</Link>
+							<Link href="/auditoria">
+								<button className="flex gap-1 items-center bg-blue-900 text-white border-2 border-blue-500 px-16 py-2 rounded-full text-xl hover:bg-blue-700 transition-all active:translate-y-1">
+									<FileClock size="24" />
+									<span>Auditar</span>
 								</button>
 							</Link>
 						</form>
