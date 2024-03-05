@@ -6,9 +6,11 @@ import Propiedad from "@/classes/Propiedad";
 import { useRouter } from "next/navigation";
 import Map from "@/components/Map";
 import fetchGeocode from "../../app/utils/geocode";
+import { useSession } from "next-auth/react";
 
 export default function PropiedadForm({ propiedadId = null }) {
 	const router = useRouter();
+	const { data: session } = useSession();
 	const {
 		register,
 		handleSubmit,
@@ -78,7 +80,7 @@ export default function PropiedadForm({ propiedadId = null }) {
 				.catch((error) => console.error("Error:", error));
 			return;
 		} else {
-			Propiedad.CrearPropiedad(data)
+			Propiedad.CrearPropiedad(data, session.user.id)
 				.then(
 					(data) => router.push(`/propiedades/${data.data._id}`),
 					alert("Propiedad creada")

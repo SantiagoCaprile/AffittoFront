@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Cliente from "@/classes/Cliente";
+import { useSession } from "next-auth/react";
 
 export default function ClienteForm({ clienteCuit = null }) {
 	const [cliente, setCliente] = useState(null);
+	const { data: session } = useSession();
 
 	const {
 		register,
@@ -39,7 +41,10 @@ export default function ClienteForm({ clienteCuit = null }) {
 	}, [clienteCuit, setValue]);
 
 	const onSubmit = (data) => {
-		console.log(data, cliente);
+		data = {
+			...data,
+			usuario: session.user.id,
+		};
 		if (!cliente) {
 			Cliente.crearCliente(data).finally(() => {
 				window.location.href = "/clientes";

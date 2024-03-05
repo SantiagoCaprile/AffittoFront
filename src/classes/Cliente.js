@@ -23,7 +23,10 @@ class Cliente {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(new Cliente(data)),
+			body: JSON.stringify({
+				...new Cliente(data),
+				usuario: data.usuario,
+			}),
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
@@ -60,12 +63,13 @@ class Cliente {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(
-				new Cliente({
+			body: JSON.stringify({
+				...new Cliente({
 					...data,
 					nombre: data.nombre_razon_social,
-				})
-			),
+				}),
+				usuario: data.usuario,
+			}),
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))

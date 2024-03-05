@@ -22,14 +22,17 @@ class Propiedad {
 		this.propietario = data.clientes[0];
 	}
 
-	static async CrearPropiedad(data) {
+	static async CrearPropiedad(data, usuarioId) {
 		try {
 			const response = await fetch(this.URL, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(new Propiedad(data)),
+				body: JSON.stringify({
+					...new Propiedad(data),
+					usuario: usuarioId,
+				}),
 			});
 			const result = await response.json();
 			return result;
