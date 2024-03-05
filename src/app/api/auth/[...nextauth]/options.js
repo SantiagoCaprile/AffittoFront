@@ -46,13 +46,17 @@ export const options = {
 	},
 	callbacks: {
 		async jwt({ token, user }) {
-			if (user) token.role = user.role;
+			if (user) {
+				token.role = user.role;
+				token.id = user.id; // Guardar el ID del usuario en el token
+			}
 			return token;
 		},
 		async session({ session, token }) {
 			if (session?.user) {
 				session.user.role = token.role;
 				session.user.name = token.name;
+				session.user.id = token.id;
 			}
 			return session;
 		},
