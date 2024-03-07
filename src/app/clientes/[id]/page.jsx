@@ -93,7 +93,7 @@ const InfoClientePage = () => {
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Email:</label>
 							<span>
-								<a href="mailto:john@affitto.com" className="text-blue-500">
+								<a href={`mailto:${cliente.email}`} className="text-blue-500">
 									{cliente.email}
 								</a>
 							</span>
