@@ -9,6 +9,7 @@ import BusquedaInteligente from "@/classes/BusquedaIntelegente";
 import BusquedaInfo from "@/components/BusquedaInfo/page";
 import BusquedaNueva from "@/components/BusquedaNueva/page";
 import { useRouter } from "next/navigation";
+import { formatearCuit } from "@/app/utils/utils";
 
 const InfoClientePage = () => {
 	const router = useRouter();
@@ -66,13 +67,13 @@ const InfoClientePage = () => {
 						style={{ objectFit: "cover" }}
 					/>
 					<div className="flex flex-wrap">
-						<label className="block font-bold">Nombre:</label>
+						<label className="block font-bold">Nombre: </label>
 						<div className="mb-2 w-1/2">
 							<span>{cliente.nombre_razon_social}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">CUIT/CUIL:</label>
-							<span>{cliente.cuit}</span>
+							<span>{formatearCuit(cliente.cuit)}</span>
 						</div>
 						<div className="mb-2 w-1/2">
 							<label className="block font-bold">Domicilio:</label>

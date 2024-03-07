@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { formatearCuit } from "@/app/utils/utils";
 
 async function listarClientes() {
 	const listaClientes = await fetch("http://localhost:3000/api/v1/clientes")
@@ -72,7 +73,7 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 	};
 
 	return (
-		<div className="flex flex-col bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 min-w-[650px] w-fit">
+		<div className="flex flex-col bg-white shadow-md rounded px-1 pt-6 pb-8 mb-4 min-w-[650px] w-fit overflow-y-auto max-h-80">
 			<h2 className="text-2xl text-black font-bold mb-4">{titulo}</h2>
 			{mostrarError && (
 				<p className="text-red-500">
@@ -81,16 +82,16 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 			)}
 			<input
 				type="text"
-				placeholder="Filtro por nombre o CUIT"
+				placeholder="Filtro por nombre o razón social"
 				value={filter}
 				onChange={handleFilterChange}
-				className={styles.inputs}
+				className={styles.inputs + " sticky top-[-25px] z-10"}
 			/>
 			<table className={styles.table}>
 				<thead className={styles.thead}>
-					<tr>
+					<tr className="divide-x-4 text-center">
 						<th>Nombre/Razón Social</th>
-						<th>CUIT</th>
+						<th className="min-w-[100px]">CUIT/CUIL</th>
 						<th>Celular</th>
 						<th>Email</th>
 					</tr>
@@ -103,31 +104,37 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 							className={styles.selected}
 						>
 							<td>{cliente.nombre_razon_social}</td>
-							<td>{cliente.cuit}</td>
+							<td className="whitespace-nowrap">
+								{formatearCuit(cliente.cuit)}
+							</td>
 							<td>{cliente.celular}</td>
 							<td>{cliente.email}</td>
 						</tr>
 					))}
 					{filteredClientes.length !== 0 ? (
-						filteredClientes.slice(0, 7).map((cliente, index) =>
+						filteredClientes.map((cliente, index) =>
 							cliente.selected ? null : (
 								<tr
 									key={index}
 									onClick={() => handleClienteClick(cliente)}
-									className={`${styles.tr} ${
+									className={`${styles.tr + " divide-x-2 divide-gray-200 "} ${
 										cliente.selected ? styles.selected : ""
 									}`}
 								>
 									<td>{cliente.nombre_razon_social}</td>
-									<td>{cliente.cuit}</td>
-									<td>{cliente.celular}</td>
-									<td>{cliente.email}</td>
+									<td className="whitespace-nowrap">
+										{formatearCuit(cliente.cuit)}
+									</td>
+									<td className="px-1">{cliente.celular}</td>
+									<td className="text-sm">{cliente.email}</td>
 								</tr>
 							)
 						)
 					) : (
 						<tr>
-							<td className="text-center text-red-500">No hay resultados</td>
+							<td className="text-center text-red-500" colSpan={4}>
+								No hay resultados
+							</td>
 						</tr>
 					)}
 				</tbody>
@@ -141,7 +148,7 @@ const styles = {
 	selected: "bg-blue-500 text-white hover:bg-blue-300",
 	table: "text-left text-gray-500 dark:text-gray-400",
 	thead:
-		"text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400",
+		"text-gray-700 p-1 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400 sticky top-[19px] z-10",
 	th: "py-3 uppercase",
 	tr: "hover:bg-gray-100",
 	selected: "bg-blue-500 text-white",

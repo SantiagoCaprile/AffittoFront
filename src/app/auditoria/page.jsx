@@ -3,7 +3,7 @@ import React from "react";
 import Auditoria from "@/classes/Auditoria";
 import { useState, useEffect } from "react";
 import SelectorClientes from "@/components/SelectorClientes/page";
-import { fixedDate } from "../utils/utils";
+import { fixedDate, formatearCuit } from "@/app/utils/utils";
 import ClienteInfo from "@/components/ClienteInfo/page";
 
 export default function AuditoriaPage() {
@@ -50,7 +50,7 @@ export default function AuditoriaPage() {
 					<thead className={styles.thead}>
 						<tr>
 							<th>Cliente</th>
-							<th>Cuit</th>
+							<th>CUIT/CUIL</th>
 							<th>Fecha</th>
 							<th>Accion</th>
 							<th>Usuario</th>
@@ -81,7 +81,7 @@ export default function AuditoriaPage() {
 										className={styles.tr}
 									>
 										<td className={styles.td}>{log.nombre_razon_social}</td>
-										<td className={styles.td}>{log.cuit}</td>
+										<td className={styles.td}>{formatearCuit(log.cuit)}</td>
 										<td className={styles.td + " text-center"}>{fecha}</td>
 										<td className={styles.td}>{log.accion}</td>
 										<td className={styles.td}>{log.usuario?.nombre}</td>

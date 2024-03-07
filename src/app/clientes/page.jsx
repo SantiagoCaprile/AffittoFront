@@ -2,6 +2,7 @@
 import React from "react";
 import { ChevronRight, Search } from "lucide-react";
 import { useState, useEffect } from "react";
+import { formatearCuit } from "@/app/utils/utils";
 import Link from "next/link";
 import Cliente from "@/classes/Cliente";
 
@@ -82,7 +83,7 @@ export default function ClientesPage() {
 							filteredClientes.map((cliente, index) => (
 								<tr key={index} className={styles.tr}>
 									<td className={styles.td}>{cliente.nombre_razon_social}</td>
-									<td className={styles.td}>{cliente.cuit}</td>
+									<td className={styles.td}>{formatearCuit(cliente.cuit)}</td>
 									<td className={styles.td}>{cliente.celular}</td>
 									<td className={styles.td}> {cliente.email}</td>
 									<td className={styles.td}>
