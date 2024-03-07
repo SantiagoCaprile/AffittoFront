@@ -15,9 +15,11 @@ const BusquedaNueva = ({ clienteId, updateBusquedas }) => {
 		register,
 		handleSubmit,
 		setValue,
+		watch,
 		formState: { errors },
 	} = useForm();
-
+	const watchMin = watch("dimension_min");
+	const watchObs = watch("observaciones");
 	const guardarBusqueda = (data) => {
 		console.log("data:", data);
 		data = { ...data, cliente: clienteId };
@@ -27,8 +29,6 @@ const BusquedaNueva = ({ clienteId, updateBusquedas }) => {
 			})
 			.catch((error) => console.error("Error:", error));
 	};
-
-	console.log("errores:", errors);
 
 	const limpiarFiltros = () => {
 		setValue("operacion", "");
@@ -127,27 +127,6 @@ const BusquedaNueva = ({ clienteId, updateBusquedas }) => {
 						{...register("ambientes")}
 					/>
 				</div>
-				<div className="flex justify-center items-center gap-4 py-4">
-					<label className="text-center font-bold">
-						Dimensiones (m&sup2;):
-					</label>
-					<input
-						className={styles.input}
-						type="number"
-						name="min"
-						min={0}
-						placeholder="Dimensión Mínima"
-						{...register("dimension_min")}
-					/>
-					<input
-						className={styles.input}
-						type="number"
-						name="max"
-						min={0}
-						placeholder="Dimensión Máxima"
-						{...register("dimension_max")}
-					/>
-				</div>
 				<div className="flex justify-center gap-4 py-4">
 					<select className={styles.select} {...register("moneda")}>
 						<option value="" defaultValue>
@@ -173,14 +152,56 @@ const BusquedaNueva = ({ clienteId, updateBusquedas }) => {
 						{...register("monto_max")}
 					/>
 				</div>
+				<div className="flex justify-center items-center gap-4 pt-4">
+					<label className="text-center font-bold">
+						Dimensiones (m&sup2;):
+					</label>
+					<input
+						className={styles.input}
+						type="number"
+						name="min"
+						min={0}
+						placeholder="Dimensión Mínima"
+						{...register("dimension_min")}
+					/>
+					<input
+						className={styles.input}
+						type="number"
+						name="max"
+						min={0}
+						placeholder="Dimensión Máxima"
+						{...register("dimension_max", {
+							validate: (value) => {
+								if (value >= 0 && value < watchMin) {
+									return "La dimensión máxima debe ser mayor a la mínima";
+								}
+							},
+						})}
+					/>
+				</div>
+				{errors.dimension_max && (
+					<span className={styles.error}>{errors.dimension_max.message}</span>
+				)}
 				<textarea
 					placeholder="Observaciones"
 					className={
 						"border-x-4 border-blue-500 bg-slate-200 rounded py-2 px-4 w-full h-32 resize-none "
 					}
 					maxLength={300}
-					{...register("observaciones")}
+					{...register("observaciones", {
+						maxLength: {
+							value: 300,
+							message: "Máximo 300 caracteres",
+						},
+					})}
 				></textarea>
+				<span className={watchObs?.length === 300 && styles.error}>
+					{watchObs?.length === 300
+						? "Máximo 300 caracteres"
+						: `Caracteres restantes: ${
+								300 - (!watchObs?.length ? 0 : watchObs.length)
+						  }`}
+				</span>
 			</form>
 			<div className="flex justify-end gap-2">
 				<button
