@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { User, UserPlus, Home, LogOut } from "lucide-react";
+import { User, Home, LogOut, BarChart3Icon } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import Popup from "reactjs-popup";
+import DolarTable from "@/components/DolarTable/page";
 
 export default function Nav() {
 	const { data: session } = useSession();
@@ -17,8 +19,13 @@ export default function Nav() {
 	return (
 		<nav className="flex items-center justify-between bg-blue-500 min-w-full pl-3 pr-3">
 			<div className=" text-white text-2xl font-bold p-4 flex gap-1 items-baseline">
-				<Home />
-				<Link href="/">Affitto</Link>
+				<Home size={28} />
+				<Link
+					href="/"
+					className="hover:transform hover:scale-105 transition-all duration-300"
+				>
+					Affitto
+				</Link>
 				<div className="flex gap-6 text-base pl-4">
 					<Link className="hover:underline" href="/clientes">
 						Clientes
@@ -26,6 +33,21 @@ export default function Nav() {
 					<Link className="hover:underline" href="/propiedades">
 						Propiedades
 					</Link>
+					<Popup
+						trigger={
+							<button className="flex hover:transform hover:scale-105 transition-all duration-150">
+								<BarChart3Icon />
+								<span>Dólar ahora</span>
+							</button>
+						}
+						position="bottom center"
+					>
+						{() => (
+							<div className="flex flex-col gap-4 p-4 bg-white rounded-sm opacity-90 shadow-md min-w-[533px]">
+								<DolarTable />
+							</div>
+						)}
+					</Popup>
 				</div>
 			</div>
 			<ul className="flex justify-end border-l-2 gap-4 px-6">
