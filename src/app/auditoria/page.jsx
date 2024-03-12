@@ -67,7 +67,7 @@ export default function AuditoriaPage() {
 										.split(":")
 										.map((e, i) => {
 											if (i === 0) {
-												return e - 3;
+												return e - 3 < 0 ? e - 3 + 24 : e - 3;
 											}
 											return e;
 										})
