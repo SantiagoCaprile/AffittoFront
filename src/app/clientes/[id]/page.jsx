@@ -128,25 +128,28 @@ const InfoClientePage = () => {
 					</thead>
 					{
 						<tbody className="divide-y divide-gray-200">
-							{cliente.propiedades?.map((propiedad, index) => (
-								<tr
-									className="cursor-pointer hover:bg-gray-100 transition-all p-2 text-center"
-									key={index}
-									onDoubleClick={() =>
-										router.push(`/propiedades/${propiedad.id._id}`)
-									}
-								>
-									<td>{propiedad.id.tipo}</td>
-									<td>
-										{propiedad.id.domicilio.calle +
-											" " +
-											propiedad.id.domicilio.altura}
-									</td>
-									<td>{propiedad.id.domicilio.localidad}</td>
-									<td>{propiedad.id.estado}</td>
-									<td>{propiedad.rol}</td>
-								</tr>
-							))}
+							{cliente.propiedades?.map(
+								(propiedad, index) =>
+									propiedad.id && (
+										<tr
+											className="cursor-pointer hover:bg-gray-100 transition-all p-2 text-center"
+											key={index}
+											onDoubleClick={() =>
+												router.push(`/propiedades/${propiedad.id._id}`)
+											}
+										>
+											<td>{propiedad.id.tipo}</td>
+											<td>
+												{propiedad.id.domicilio.calle +
+													" " +
+													propiedad.id.domicilio.altura}
+											</td>
+											<td>{propiedad.id.domicilio.localidad}</td>
+											<td>{propiedad.id.estado}</td>
+											<td>{propiedad.rol}</td>
+										</tr>
+									)
+							)}
 							{cliente.propiedades?.length === 0 && (
 								<tr>
 									<td colSpan="4" className="text-center text-red-500">
