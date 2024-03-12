@@ -91,7 +91,7 @@ const SelectorClientes = ({ setSeleccionados, titulo, maximo = 0 }) => {
 				<thead className={styles.thead}>
 					<tr className="divide-x-4 text-center">
 						<th>Nombre/Razón Social</th>
-						<th className="min-w-[100px]">CUIT/CUIL</th>
+						<th className="min-w-[100px] whitespace-nowrap">CUIT/CUIL</th>
 						<th>Celular</th>
 						<th>Email</th>
 					</tr>

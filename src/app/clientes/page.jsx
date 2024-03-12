@@ -83,7 +83,9 @@ export default function ClientesPage() {
 							filteredClientes.map((cliente, index) => (
 								<tr key={index} className={styles.tr}>
 									<td className={styles.td}>{cliente.nombre_razon_social}</td>
-									<td className={styles.td}>{formatearCuit(cliente.cuit)}</td>
+									<td className={styles.td + " whitespace-nowrap"}>
+										{formatearCuit(cliente.cuit)}
+									</td>
 									<td className={styles.td}>{cliente.celular}</td>
 									<td className={styles.td}> {cliente.email}</td>
 									<td className={styles.td}>

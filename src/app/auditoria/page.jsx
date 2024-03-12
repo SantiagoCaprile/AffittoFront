@@ -81,7 +81,9 @@ export default function AuditoriaPage() {
 										className={styles.tr}
 									>
 										<td className={styles.td}>{log.nombre_razon_social}</td>
-										<td className={styles.td}>{formatearCuit(log.cuit)}</td>
+										<td className={styles.td + " whitespace-nowrap"}>
+											{formatearCuit(log.cuit)}
+										</td>
 										<td className={styles.td + " text-center"}>{fecha}</td>
 										<td className={styles.td}>{log.accion}</td>
 										<td className={styles.td}>{log.usuario?.nombre}</td>
