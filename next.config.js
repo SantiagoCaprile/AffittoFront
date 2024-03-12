@@ -8,7 +8,7 @@ const nextConfig = {
 		appDir: true,
 	},
 	images: {
-		domains: [],
+		domains: ["images.tango.us"],
 	},
 	webpack: (config) => {
 		config.plugins.push(

@@ -1,9 +1,16 @@
 import Link from "next/link";
-import { User, Home, LogOut, BarChart3Icon } from "lucide-react";
+import {
+	User,
+	Home,
+	LogOut,
+	BarChart3Icon,
+	LucideHelpCircle,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Popup from "reactjs-popup";
 import DolarTable from "@/components/DolarTable/page";
+import TutorialClientes from "../TutorialClientes/page";
 
 export default function Nav() {
 	const { data: session } = useSession();
@@ -45,6 +52,21 @@ export default function Nav() {
 						{() => (
 							<div className="flex flex-col gap-4 p-4 bg-white rounded-sm opacity-90 shadow-md min-w-[533px]">
 								<DolarTable />
+							</div>
+						)}
+					</Popup>
+					<Popup
+						trigger={
+							<button className="flex hover:transform hover:scale-105 transition-all duration-150">
+								<LucideHelpCircle />
+								<span>Ayuda</span>
+							</button>
+						}
+						position="bottom center"
+					>
+						{() => (
+							<div className="flex flex-col gap-4 p-4 bg-white rounded-sm shadow-md min-w-[533px]">
+								<TutorialClientes />
 							</div>
 						)}
 					</Popup>
