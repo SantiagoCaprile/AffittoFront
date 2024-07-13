@@ -1,8 +1,22 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import BusquedaInteligente from "@/classes/BusquedaIntelegente";
 
-const PosiblesInteresados = ({ clientes }) => {
+const PosiblesInteresados = ({ propiedadId }) => {
 	const router = useRouter();
+	const [busquedas, setBusquedas] = useState([]);
+
+	useEffect(() => {
+		async function fetchData() {
+			const busquedas = await BusquedaInteligente.busquedasDePropiedad(
+				propiedadId
+			);
+			setBusquedas(busquedas);
+		}
+		fetchData();
+	}, [propiedadId]);
+
 	return (
 		<div className="flex flex-col bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 			<h2 className="text-2xl text-black font-bold mb-4">
@@ -18,23 +32,25 @@ const PosiblesInteresados = ({ clientes }) => {
 					</tr>
 				</thead>
 				<tbody>
-					{Array.isArray(clientes) ? (
-						clientes.map((cliente) => (
+					{busquedas.length > 0 ? (
+						busquedas.map((busqueda) => (
 							<tr
-								key={cliente.cuit}
-								onDoubleClick={() => router.push(`/clientes/${cliente.cuit}`)}
+								key={busqueda._id}
+								onDoubleClick={() =>
+									router.push(`/clientes/${busqueda.cliente.cuit}`)
+								}
 								className={styles.tr}
 							>
-								<td>{cliente.nombre_razon_social}</td>
-								<td>{cliente.celular}</td>
-								<td>{cliente.email}</td>
-								<td>{cliente.operacion}</td>
+								<td>{busqueda.cliente.nombre_razon_social}</td>
+								<td>{busqueda.cliente.celular}</td>
+								<td>{busqueda.cliente.email}</td>
+								<td>{busqueda.operacion}</td>
 							</tr>
 						))
 					) : (
 						<tr>
-							<td colSpan="3" className="text-center">
-								No hay clientes para mostrar
+							<td colSpan={4} className="text-center text-red-400">
+								No hay clientes interesados
 							</td>
 						</tr>
 					)}

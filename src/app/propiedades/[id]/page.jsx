@@ -319,7 +319,7 @@ const InfoPropiedadPage = () => {
 						))}
 				</div>
 			)}
-			<PosiblesInteresados clientes={clientesInteresados} />
+			<PosiblesInteresados propiedadId={propiedad._id} />
 		</div>
 	);
 };

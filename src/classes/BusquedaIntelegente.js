@@ -64,6 +64,18 @@ class BusquedaInteligente {
 				return error;
 			});
 	}
+
+	static async busquedasDePropiedad(propiedadId) {
+		const url = `http://localhost:3000/propiedades/${propiedadId}/busquedas`;
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			console.error("Error:", error);
+			return error;
+		}
+	}
 }
 
 export default BusquedaInteligente;
